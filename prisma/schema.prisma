@@ -1,12 +1,5 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
-  output   = "./node_modules/@prisma/client"
 }
 
 datasource db {
@@ -16,18 +9,80 @@ datasource db {
 }
 
 model User {
-  id           String   @id @default(uuid())
-  name         String
-  email        String   @unique
-  password     String
-  role         Role     @default(User)
-  twoFaEnabled Boolean  @default(false)
-  twoFaSecret  String?
-  createdAt    DateTime @default(now())
+  id              String     @id @default(uuid())
+  name            String
+  email           String     @unique
+  password        String
+  role            Role       @default(USER)
+  twoFaEnabled    Boolean    @default(false)
+  twoFaSecret     String?
+  createdAt       DateTime   @default(now())
+  status          UserStatus @default(ACTIVE)
+  statusUpdatedAt DateTime?
+  suspendReason   String?
+  warningReason   String?
+  lastLoginAt     DateTime?
+  lastLoginIp     String?
+  updatedAt       DateTime   @updatedAt
+
+  sessions      Session[]
+  loginAttempts LoginAttempt[]
+  devices       Device[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  device    Device?  @relation(fields: [deviceId], references: [id])
+  deviceId  String?
+  ip        String
+  userAgent String
+  location  String?
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+}
+
+model Device {
+  id          String    @id @default(cuid())
+  user        User      @relation(fields: [userId], references: [id])
+  userId      String
+  fingerprint String
+  name        String?
+  ip          String
+  location    String?
+  trusted     Boolean   @default(false)
+  lastUsedAt  DateTime  @default(now())
+  createdAt   DateTime  @default(now())
+  sesssions   Session[]
+}
+
+model LoginAttempt {
+  id        String      @id @default(cuid())
+  user      User?       @relation(fields: [userId], references: [id])
+  userId    String?
+  email     String
+  success   LoginStatus
+  reason    String?
+  ip        String
+  location  String?
+  userAgent String?
+  createdAt DateTime    @default(now())
+}
+
+enum LoginStatus {
+  SUCCESS
+  FAILURE
 }
 
 enum Role {
-  User
-  Admin
-  Guest
+  USER
+  ADMIN
+  GUEST
+}
+
+enum UserStatus {
+  ACTIVE
+  WARNED
+  SUSPENDED
 }

@@ -30,22 +30,22 @@ const data = {
   navMain: [
     {
       title: "User Management",
-      url: "#",
+      url: "/dashboard",
       icon: UsersIcon,
     },
     {
       title: "Security & Logs",
-      url: "#",
+      url: "/securityandlogs",
       icon: FolderLock,
     },
     {
       title: "Authentication",
-      url: "#",
+      url: "/authentication",
       icon: Fingerprint,
     },
     {
       title: "Analytics",
-      url: "#",
+      url: "analytics",
       icon: ChartNoAxesCombined,
     },
   ],

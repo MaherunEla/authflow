@@ -1,13 +1,14 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState } from "react";
+import { columns } from "@/app/(admin)/components/column";
+
 import {
   useReactTable,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
   flexRender,
-  ColumnDef,
   getFacetedRowModel,
   getFacetedUniqueValues,
   ColumnFiltersState,
@@ -38,48 +39,53 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-type User = {
+export type Role = "ADMIN" | "USER" | "GUEST";
+type TableUser = {
   id: string;
   name: string;
   email: string;
-  role: string;
+  role: Role;
   status: string;
   twofactor: string;
 };
 
-const UserTable = ({ data }: { data: User[] }) => {
+const UserTable = ({ data }: { data: TableUser[] }) => {
   const [filter, setFilter] = useState("");
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
-  const columns = useMemo<ColumnDef<User>[]>(
-    () => [
-      {
-        header: "Id",
-        accessorKey: "id",
-      },
-      {
-        header: "Name",
-        accessorKey: "name",
-      },
-      {
-        header: "Email",
-        accessorKey: "email",
-      },
-      {
-        header: "Role",
-        accessorKey: "role",
-      },
-      {
-        header: "Status",
-        accessorKey: "status",
-      },
-      {
-        header: "TwoFactor",
-        accessorKey: "twofactor",
-      },
-    ],
-    []
-  );
+  // const columns = useMemo<ColumnDef<User>[]>(
+  //   () => [
+  //     {
+  //       header: "Id",
+  //       accessorKey: "id",
+  //     },
+  //     {
+  //       header: "Name",
+  //       accessorKey: "name",
+  //     },
+  //     {
+  //       header: "Email",
+  //       accessorKey: "email",
+  //     },
+  //     {
+  //       header: "Role",
+  //       accessorKey: "role",
+  //     },
+  //     {
+  //       header: "Status",
+  //       accessorKey: "status",
+  //     },
+  //     {
+  //       header: "TwoFactor",
+  //       accessorKey: "twofactor",
+  //     },
+  //     {
+  //       header:"Action",
+  //       accessorKey:""
+  //     }
+  //   ],
+  //   []
+  // );
 
   const table = useReactTable({
     data,

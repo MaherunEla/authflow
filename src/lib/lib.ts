@@ -87,7 +87,9 @@ export async function login(formData: FormData) {
       window: 1,
     });
 
-    if (!verified) return { error: "Invalid 2FA code" };
+    if (!verified) {
+      return { error: "Invalid 2FA code" };
+    }
     const expires = new Date(Date.now() + 60 * 60 * 1000);
     const custom_jwt = await encrypt({ user, expires });
 
