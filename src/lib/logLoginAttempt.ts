@@ -6,17 +6,17 @@ type LogLoginAttemptParams = {
   email: string;
   success: LoginStatus;
   reason?: string;
-  request: Request;
+  userAgent: string;
+  ip: string;
 };
 
 export async function LogLoginAttempt({
   email,
   success,
   reason,
-  request,
+  userAgent,
+  ip,
 }: LogLoginAttemptParams) {
-  const userAgent = request.headers.get("user-agent") || "unknown";
-  const ip = request.headers.get("x-forwarded-for") || "unknown";
   const location = await getLocationFromIP(ip);
   const user = await prisma.user.findUnique({
     where: { email },

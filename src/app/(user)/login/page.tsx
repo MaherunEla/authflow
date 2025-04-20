@@ -1,9 +1,10 @@
 import { redirect } from "next/navigation";
 import { login } from "@/lib/lib";
 
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import Sociallogin from "../components/shared/sociallogin";
 import { use } from "react";
+import FingerprintField from "../components/shared/FingerprintField";
 
 export default function Login({
   searchParams,
@@ -25,7 +26,10 @@ export default function Login({
           <form
             action={async (formData) => {
               "use server";
-              const result = await login(formData);
+              const headersList = await headers();
+              const userAgent = headersList.get("user-agent") || "";
+              const ip = headersList.get("x-forwarded-for") || "unknown";
+              const result = await login(formData, { userAgent, ip });
 
               if (result?.error) {
                 redirect(
@@ -95,6 +99,7 @@ export default function Login({
                       className="w-full rounded border bg-gray-50 px-3 py-2 text-gray-800 outline-none ring-indigo-300 transition duration-100 focus:ring"
                     />
                   </div>
+                  <FingerprintField />
                   {finalError && (
                     <p className="text-red-500">
                       {decodeURIComponent(finalError)}
@@ -102,6 +107,7 @@ export default function Login({
                   )}
                 </>
               )}
+
               <button
                 type="submit"
                 className="block rounded-lg bg-indigo-500 px-8 py-3 text-center text-sm font-semibold text-white outline-none ring-gray-300 transition duration-100 hover:bg-gray-700 focus-visible:ring active:bg-gray-600 md:text-base"

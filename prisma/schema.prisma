@@ -51,6 +51,7 @@ model Device {
   name        String?
   ip          String
   location    String?
+  userAgent   String?
   trusted     Boolean   @default(false)
   lastUsedAt  DateTime  @default(now())
   createdAt   DateTime  @default(now())

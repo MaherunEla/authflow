@@ -4,6 +4,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { SessionPayload } from "../../types/authTypes";
 import speakeasy from "speakeasy";
 import { prisma } from "./prisma";
+import { LoginStatus } from "@prisma/client";
+import { LogLoginAttempt } from "./logLoginAttempt";
+import * as UAParser from "ua-parser-js";
+import { getLocationFromIP } from "./ip";
 
 const secretKey = "secret";
 const key = new TextEncoder().encode(secretKey);
@@ -28,12 +32,18 @@ export async function decrypt(input: string): Promise<SessionPayload | null> {
   }
 }
 
-export async function login(formData: FormData) {
+type RequestMeta = {
+  ip: string;
+  userAgent: string;
+};
+
+export async function login(formData: FormData, meta: RequestMeta) {
   const step = formData.get("step") || "credentials";
   if (step === "credentials") {
     const user = {
       email: formData.get("email"),
       password: formData.get("password"),
+      fingerprint: formData.get("fingerprint"),
     };
     if (!user.email || !user.password) {
       return { error: "Invalid email or password" };
@@ -46,6 +56,7 @@ export async function login(formData: FormData) {
         body: JSON.stringify({
           email: user.email,
           password: user.password,
+          fingerprint: user.fingerprint,
         }),
       }
     );
@@ -88,10 +99,69 @@ export async function login(formData: FormData) {
     });
 
     if (!verified) {
+      await LogLoginAttempt({
+        email: user.email || "Unknown or missing",
+        success: LoginStatus.FAILURE,
+        reason: "Invalid 2FA code",
+        userAgent: meta.userAgent,
+        ip: meta.ip,
+      });
       return { error: "Invalid 2FA code" };
     }
     const expires = new Date(Date.now() + 60 * 60 * 1000);
     const custom_jwt = await encrypt({ user, expires });
+
+    const parser = new UAParser.UAParser();
+    parser.setUA(meta.userAgent);
+    const browser = parser.getBrowser().name || "Unknown Browser";
+    const os = parser.getOS().name || "Unknown OS";
+    const deviceName = `${browser} on ${os}`;
+
+    await LogLoginAttempt({
+      email: user.email,
+      success: LoginStatus.SUCCESS,
+      reason: "Log in Successful",
+      userAgent: meta.userAgent,
+      ip: meta.ip,
+    });
+
+    let device = await prisma.device.findFirst({
+      where: {
+        userId: user.id,
+        ip: meta.ip,
+        userAgent: meta.userAgent,
+      },
+    });
+
+    if (!device) {
+      device = await prisma.device.create({
+        data: {
+          userId: user.id,
+          name: deviceName,
+          fingerprint: (formData.get("fingerprint") as string) || "",
+          ip: meta.ip,
+          location: await getLocationFromIP(meta.ip),
+          userAgent: meta.userAgent,
+          lastUsedAt: new Date(),
+        },
+      });
+    } else {
+      await prisma.device.update({
+        where: { id: device.id },
+        data: { lastUsedAt: new Date() },
+      });
+    }
+
+    await prisma.session.create({
+      data: {
+        userId: user.id,
+        ip: meta.ip,
+        userAgent: meta.userAgent,
+        location: await getLocationFromIP(meta.ip),
+        expiresAt: new Date(Date.now() + 1000 * 60 * 60),
+        deviceId: device.id,
+      },
+    });
 
     return { custom_jwt };
   }
@@ -114,11 +184,15 @@ export async function logout() {
   cookieStore.set("next-auth.session-token", "", {
     path: "/",
     expires: new Date(0),
+    httpOnly: true,
+    secure: true,
   });
 
   cookieStore.set("__Secure-next-auth.session-token", "", {
     path: "/",
     expires: new Date(0),
+    httpOnly: true,
+    secure: true,
   });
 }
 
@@ -157,6 +231,8 @@ export async function updateSession(
     response.cookies.set("custom_jwt", newToken, {
       httpOnly: true,
       expires: session.expires,
+      path: "/",
+      secure: process.env.NODE_ENV === "production",
     });
 
     return response;
