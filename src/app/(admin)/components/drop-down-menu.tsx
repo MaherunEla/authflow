@@ -34,6 +34,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import { DialogClose } from "@radix-ui/react-dialog";
+
 type Props = {
   user: {
     id: string;
@@ -41,7 +45,7 @@ type Props = {
     email: string;
     role: string;
     status: string;
-    twofactor: string;
+    twoFaEnabled: boolean;
   };
 };
 
@@ -54,6 +58,7 @@ export const userformSchema = z.object({
 export type FormValues = z.infer<typeof userformSchema>;
 
 export function DropDownMenu({ user }: Props) {
+  //const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL;
   const form = useForm<FormValues>({
     defaultValues: async () => {
       if (user) {
@@ -72,6 +77,8 @@ export function DropDownMenu({ user }: Props) {
     resolver: zodResolver(userformSchema),
   });
 
+  const router = useRouter();
+
   const {
     handleSubmit,
     register,
@@ -81,6 +88,25 @@ export function DropDownMenu({ user }: Props) {
 
   const onSubmit = async (data: FormValues) => {
     console.log("Form submitted", data);
+    try {
+      const res = await axios.patch(`/api/admin/users/${user.id}`, data);
+      console.log(res);
+      router.refresh();
+    } catch (error) {
+      console.error("Update error", error);
+    }
+  };
+
+  const handleStatus = async () => {
+    try {
+      const res = await axios.patch(`/api/admin/users/${user.id}`, {
+        status: "ACTIVE",
+      });
+      console.log(res);
+      router.refresh();
+    } catch (error) {
+      console.error("Update error", error);
+    }
   };
 
   const [warnDialogOpen, setWarnDialogOpen] = useState(false);
@@ -90,17 +116,50 @@ export function DropDownMenu({ user }: Props) {
   const [suspendReason, setSuspendReason] = useState("");
 
   const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
-  const handleConfirmWarn = () => {
+  const handleConfirmWarn = async () => {
     console.log("Warn reason", warnReason);
+
+    try {
+      const res = await axios.post("/api/warn-user", {
+        email: user.email,
+        reason: warnReason,
+      });
+      console.log(res);
+      router.refresh();
+    } catch (error) {
+      console.error("warn error", error);
+    }
 
     setWarnDialogOpen(false);
   };
 
-  const handleConfirmSuspend = () => {
-    console.log("Warn reason", suspendReason);
+  const handleConfirmSuspend = async () => {
+    console.log("Suspend reason", suspendReason);
+    try {
+      const res = await axios.post("/api/suspend-user", {
+        email: user.email,
+        reason: suspendReason,
+      });
+      console.log(res);
+      router.refresh();
+    } catch (error) {
+      console.error("Suspend error", error);
+    }
 
     setSuspendDialogOpen(false);
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      const res = await axios.delete(`/api/admin/users/${user.id}`);
+      console.log(res);
+    } catch (error) {
+      console.error("user Delete error", error);
+    }
+
+    setDeleteDialogOpen(false);
   };
 
   return (
@@ -116,7 +175,9 @@ export function DropDownMenu({ user }: Props) {
             <DropdownMenuSubTrigger>Status</DropdownMenuSubTrigger>
             <DropdownMenuPortal>
               <DropdownMenuSubContent>
-                <DropdownMenuItem>Active</DropdownMenuItem>
+                <DropdownMenuItem onClick={handleStatus}>
+                  Active
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => setWarnDialogOpen(true)}>
                   Warned
                 </DropdownMenuItem>
@@ -130,7 +191,9 @@ export function DropDownMenu({ user }: Props) {
           <DropdownMenuItem onClick={() => setEditDialogOpen(true)}>
             Edit
           </DropdownMenuItem>
-          <DropdownMenuItem>Delete</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setDeleteDialogOpen(true)}>
+            Delete
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
@@ -176,7 +239,7 @@ export function DropDownMenu({ user }: Props) {
               </Label>
               <Input
                 id="suspendReason"
-                value={warnReason}
+                value={suspendReason}
                 className="col-span-3"
                 onChange={(e) => setSuspendReason(e.target.value)}
               />
@@ -247,6 +310,27 @@ export function DropDownMenu({ user }: Props) {
               <Button type="submit">Save changes</Button>
             </DialogFooter>
           </form>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Delete</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this user?
+            </DialogDescription>
+          </DialogHeader>
+
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="ghost">Cancel</Button>
+            </DialogClose>
+
+            <Button variant="destructive" onClick={handleConfirmDelete}>
+              Confirm Delete
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </>

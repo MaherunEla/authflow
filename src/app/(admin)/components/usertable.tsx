@@ -39,53 +39,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { TableUser } from "../dashboard/page";
 export type Role = "ADMIN" | "USER" | "GUEST";
-type TableUser = {
-  id: string;
-  name: string;
-  email: string;
-  role: Role;
-  status: string;
-  twofactor: string;
-};
 
 const UserTable = ({ data }: { data: TableUser[] }) => {
   const [filter, setFilter] = useState("");
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-
-  // const columns = useMemo<ColumnDef<User>[]>(
-  //   () => [
-  //     {
-  //       header: "Id",
-  //       accessorKey: "id",
-  //     },
-  //     {
-  //       header: "Name",
-  //       accessorKey: "name",
-  //     },
-  //     {
-  //       header: "Email",
-  //       accessorKey: "email",
-  //     },
-  //     {
-  //       header: "Role",
-  //       accessorKey: "role",
-  //     },
-  //     {
-  //       header: "Status",
-  //       accessorKey: "status",
-  //     },
-  //     {
-  //       header: "TwoFactor",
-  //       accessorKey: "twofactor",
-  //     },
-  //     {
-  //       header:"Action",
-  //       accessorKey:""
-  //     }
-  //   ],
-  //   []
-  // );
 
   const table = useReactTable({
     data,
@@ -237,30 +196,6 @@ const UserTable = ({ data }: { data: TableUser[] }) => {
           </PaginationItem>
         </PaginationContent>
       </Pagination>
-      {/* <Button
-        onClick={() => table.firstPage()}
-        disabled={!table.getCanPreviousPage()}
-      >
-        {"<<"}
-      </Button>
-      <Button
-        onClick={() => table.previousPage()}
-        disabled={!table.getCanPreviousPage()}
-      >
-        {"<"}
-      </Button>
-      <Button
-        onClick={() => table.nextPage()}
-        disabled={!table.getCanNextPage()}
-      >
-        {">"}
-      </Button>
-      <Button
-        onClick={() => table.lastPage()}
-        disabled={!table.getCanNextPage()}
-      >
-        {">>"}
-      </Button>*/}
     </div>
   );
 };

@@ -163,6 +163,14 @@ export async function login(formData: FormData, meta: RequestMeta) {
       },
     });
 
+    await prisma.user.update({
+      where: { email: user.email },
+      data: {
+        lastLoginAt: new Date(),
+        lastLoginIp: meta.ip,
+      },
+    });
+
     return { custom_jwt };
   }
 

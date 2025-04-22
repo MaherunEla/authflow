@@ -1,17 +1,9 @@
 import { createColumnHelper } from "@tanstack/react-table";
 import { DropDownMenu } from "./drop-down-menu";
-import { Role } from "@prisma/client";
+import { TableUser } from "../dashboard/page";
+import { Badge } from "@/components/ui/badge";
 
-type User = {
-  id: string;
-  name: string;
-  email: string;
-  role: Role;
-  status: string;
-  twofactor: string;
-};
-
-const columnHelper = createColumnHelper<User>();
+const columnHelper = createColumnHelper<TableUser>();
 
 export const columns = [
   columnHelper.accessor("id", {
@@ -34,9 +26,13 @@ export const columns = [
     cell: (info) => <p>{info.getValue()}</p>,
     header: () => "Status",
   }),
-  columnHelper.accessor("twofactor", {
-    cell: (info) => <p>{info.getValue()}</p>,
-    header: () => "Twofactor",
+  columnHelper.accessor("twoFaEnabled", {
+    cell: (info) => (
+      <Badge variant={info.getValue() ? "default" : "outline"}>
+        {info.getValue() ? "Enabled" : "Disabled"}
+      </Badge>
+    ),
+    header: () => "TwoFaEnabled",
   }),
   columnHelper.display({
     id: "acions",

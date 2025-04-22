@@ -32,7 +32,7 @@ model User {
 
 model Session {
   id        String   @id @default(cuid())
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String
   device    Device?  @relation(fields: [deviceId], references: [id])
   deviceId  String?
@@ -45,7 +45,7 @@ model Session {
 
 model Device {
   id          String    @id @default(cuid())
-  user        User      @relation(fields: [userId], references: [id])
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      String
   fingerprint String
   name        String?
@@ -60,7 +60,7 @@ model Device {
 
 model LoginAttempt {
   id        String      @id @default(cuid())
-  user      User?       @relation(fields: [userId], references: [id])
+  user      User?       @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String?
   email     String
   success   LoginStatus
@@ -86,4 +86,5 @@ enum UserStatus {
   ACTIVE
   WARNED
   SUSPENDED
+  LOCKED
 }

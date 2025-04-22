@@ -124,6 +124,14 @@ export const POST = async (req: Request) => {
       },
     });
 
+    await prisma.user.update({
+      where: { email: user.email },
+      data: {
+        lastLoginAt: new Date(),
+        lastLoginIp: ip,
+      },
+    });
+
     return NextResponse.json(
       {
         message: "Login successfull",

@@ -14,15 +14,7 @@ import {
   ColumnFiltersState,
 } from "@tanstack/react-table";
 import { Input } from "@/components/ui/input";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
+
 import {
   Table,
   TableBody,
@@ -37,17 +29,17 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
 } from "@/components/ui/select";
 
 export type userfaillogin = {
   id: string;
   name: string;
   email: string;
-  attempts: string;
+  attempts: number;
   lastattempt: string;
   ipaddress: string;
   location: string;
+  status: string;
 };
 
 const FailedLoginTable = ({ data }: { data: userfaillogin[] }) => {
@@ -143,67 +135,6 @@ const FailedLoginTable = ({ data }: { data: userfaillogin[] }) => {
           ))}
         </TableBody>
       </Table>
-
-      <Pagination>
-        <PaginationContent>
-          <PaginationItem>
-            <button
-              onClick={() => table.firstPage()}
-              disabled={!table.getCanPreviousPage()}
-            >
-              {" "}
-              <PaginationPrevious href="#" />
-            </button>
-          </PaginationItem>
-          <PaginationItem>
-            <button
-              onClick={() => table.previousPage()}
-              disabled={!table.getCanPreviousPage()}
-            >
-              <PaginationLink href="#">1</PaginationLink>
-            </button>
-          </PaginationItem>
-          <PaginationItem>
-            <button
-              onClick={() => table.nextPage()}
-              disabled={!table.getCanNextPage()}
-            >
-              <PaginationLink href="#">2</PaginationLink>
-            </button>
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationEllipsis />
-          </PaginationItem>
-          <PaginationItem>
-            <button
-              onClick={() => table.lastPage()}
-              disabled={!table.getCanNextPage()}
-            >
-              <PaginationNext href="#" />
-            </button>
-          </PaginationItem>
-
-          <PaginationItem>
-            <Select
-              value={String(table.getState().pagination.pageSize)}
-              onValueChange={(value) => {
-                table.setPageSize(Number(value));
-              }}
-            >
-              <SelectTrigger className="w-[80px]">
-                <SelectValue placeholder="Page Size" />
-              </SelectTrigger>
-              <SelectContent>
-                {[2, 5, 30, 40, 50].map((pageSize) => (
-                  <SelectItem key={pageSize} value={String(pageSize)}>
-                    {pageSize}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </PaginationItem>
-        </PaginationContent>
-      </Pagination>
     </div>
   );
 };

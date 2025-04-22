@@ -3,43 +3,19 @@ import { SectionCards } from "../components/section-card";
 import { SiteHeader } from "../components/site-header";
 import { AppSidebar } from "../components/app-sidebar";
 import UserTable from "../components/usertable";
+import { getUserFromDB } from "@/lib/getUserFromDB";
 export type Role = "ADMIN" | "USER" | "GUEST";
-type TableUser = {
+export type TableUser = {
   id: string;
   name: string;
   email: string;
   role: Role;
   status: string;
-  twofactor: string;
+  twoFaEnabled: boolean;
 };
 
-export default function Home() {
-  const dummyUsers: TableUser[] = [
-    {
-      id: "1",
-      name: "Alice",
-      email: "alice@example.com",
-      role: "ADMIN",
-      status: "active",
-      twofactor: "enable",
-    },
-    {
-      id: "2",
-      name: "Bob",
-      email: "bob@example.com",
-      role: "USER",
-      status: "active",
-      twofactor: "enable",
-    },
-    {
-      id: "3",
-      name: "Carol",
-      email: "carol@example.com",
-      role: "GUEST",
-      status: "suspend",
-      twofactor: "disable",
-    },
-  ];
+export default async function Home() {
+  const users: TableUser[] = await getUserFromDB();
   return (
     <SidebarProvider>
       <AppSidebar variant="inset" />
@@ -50,7 +26,7 @@ export default function Home() {
             <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
               <SectionCards />
             </div>
-            <UserTable data={dummyUsers} />
+            <UserTable data={users} />
           </div>
         </div>
       </SidebarInset>
