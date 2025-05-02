@@ -27,7 +27,7 @@ type Props = {
   };
 };
 
-export const profileformSchema = z.object({
+const profileformSchema = z.object({
   name: z.string().min(3, { message: "name is require" }).optional(),
   email: z.string().email({ message: "Invalid Email address" }).optional(),
   password: z
@@ -45,7 +45,7 @@ export const profileformSchema = z.object({
   twoFaEnabled: z.boolean(),
 });
 
-export type FormValues = z.infer<typeof profileformSchema>;
+type FormValues = z.infer<typeof profileformSchema>;
 
 const Profileedit = ({ user }: Props) => {
   const router = useRouter();
@@ -79,10 +79,7 @@ const Profileedit = ({ user }: Props) => {
   const onSubmit = async (data: FormValues) => {
     console.log("Form submitted", data);
     try {
-      const res = await axios.put(
-        "http://localhost:3000/api/auth/profile",
-        data
-      );
+      const res = await axios.put("/api/auth/profile", data);
       console.log({ res });
       toast("Profile has been updated.");
       router.refresh();

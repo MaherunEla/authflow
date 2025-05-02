@@ -1,36 +1,97 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AuthFlow 🔐
 
-## Getting Started
+A modern authentication system built with **Next.js 14 App Router**, **Prisma**, **PostgreSQL**, and custom **JWT-based authentication**. It features:
 
-First, run the development server:
+- Email/password login
+- Google OAuth login via NextAuth
+- Server-side 2FA (Two-Factor Authentication)
+- Session tracking (IP, device, location)
+- Admin dashboard for user management and security logs
+
+## 🚀 Features
+
+- ✅ Secure email/password login with encrypted JWT cookies
+- 🔐 2FA setup using TOTP (Google Authenticator)
+- 🧠 OAuth login with Google via NextAuth
+- 🧭 Session history and device tracking (IP, time, location)
+- 👮 Admin panel with user table, login logs, and security settings
+- 💅 Built with Shadcn/UI and TailwindCSS for UI
+
+## 🛠️ Tech Stack
+
+- Next.js 14 (App Router)
+- TypeScript
+- Prisma ORM
+- PostgreSQL
+- NextAuth.js (Google login)
+- JWT (custom auth)
+- FingerprintJS (device fingerprinting)
+- Resend (email provider)
+- Shadcn/UI + TanStack Table
+
+## 📦 Installation
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone
+cd authflow
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+🧪 Environment Variables
+Create a .env.local file and add:
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+GITHUB_CLIENT_ID=your_github_client_id
+GITHUB_CLIENT_SECRET=your_github_client_secret
+NEXTAUTH_SECRET=your_nextauth_secret
+NEXTAUTH_URL=http://localhost:3000
+NEXT_PUBLIC_API_URL=http://localhost:3000
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+DATABASE_URL=postgresql://user:pass@localhost:5432/authflow
+DIRECT_URL=
+JWT_SECRET=your_custom_jwt_secret
+TEMP_SECRET=your_temp_secret
+RESEND_API_KEY=your_resend_api_key
 
-## Learn More
+🧱 Prisma Setup
 
-To learn more about Next.js, take a look at the following resources:
+npx prisma db push
+npx prisma generate
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+▶️ Running Locally
+npm run dev
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+🔐 2FA Guide
+Visit /twofa to enable 2FA.
 
-## Deploy on Vercel
+Scan the QR code using Google Authenticator.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Enter the generated 6-digit code to verify.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+🧪 Testing
+You can test APIs using tools like:
+
+Postman
+
+Thunder Client
+
+fetch/axios in your browser dev tools or internal routes
+
+🌍 Deployment
+✅ Vercel
+This project is ready for Vercel.
+
+Push to GitHub
+
+Go to vercel.com
+
+Import your repo → Set environment variables
+
+Click Deploy
+
+📷 Screenshots
+
+🙋‍♂️ Author
+
+📄 License

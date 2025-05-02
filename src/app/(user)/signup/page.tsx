@@ -6,8 +6,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-
-export const signupformSchema = z.object({
+const signupformSchema = z.object({
   name: z.string().min(3, "Name is required"),
   email: z
     .string()
@@ -15,10 +14,10 @@ export const signupformSchema = z.object({
     .email({ message: "Invalid Email address" }),
   password: z.string().min(8, "Password is required"),
   newpassword: z.string().min(8, "password is required").optional(),
-  twoFactor: z.enum(["enable", "disable"]).optional(),
+  twoFaEnabled: z.enum(["enable", "disable"]).optional(),
 });
 
-export type FormValues = z.infer<typeof signupformSchema>;
+type FormValues = z.infer<typeof signupformSchema>;
 
 const Signup = () => {
   const router = useRouter();

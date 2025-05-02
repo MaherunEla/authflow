@@ -150,7 +150,7 @@ export const POST = async (req: Request) => {
           deviceId = device.id;
         }
       } else {
-        const [_, createdDevice] = await prisma.$transaction([
+        const [, createdDevice] = await prisma.$transaction([
           prisma.suspiciousActivity.create({
             data: {
               userId: user.id,

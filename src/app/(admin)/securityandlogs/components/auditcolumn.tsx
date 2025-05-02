@@ -17,7 +17,7 @@ function shortenNotes(text: string | null | undefined, maxLength = 50) {
   if (!text) return "";
   return text.length > maxLength ? text.slice(0, maxLength) + "...." : text;
 }
-const exactMatchFilter: FilterFn<any> = (row, columnId, filterValue) => {
+const exactMatchFilter: FilterFn<unknown> = (row, columnId, filterValue) => {
   const cellValue = row.getValue(columnId);
   if (filterValue === "all") return true;
   return cellValue === filterValue;

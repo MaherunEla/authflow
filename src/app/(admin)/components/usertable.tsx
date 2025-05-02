@@ -41,7 +41,6 @@ import {
 } from "@/components/ui/select";
 import { TableUser } from "../dashboard/page";
 import { downloadCSV } from "@/lib/downloadCSV";
-import { cn } from "@/lib/utils";
 export type Role = "ADMIN" | "USER" | "GUEST";
 
 const UserTable = ({ data }: { data: TableUser[] }) => {
@@ -139,10 +138,7 @@ const UserTable = ({ data }: { data: TableUser[] }) => {
               {headerGroup.headers.map((header) => (
                 <TableHead
                   key={header.id}
-                  className={cn(
-                    " text-left text-gray-700 font-semibold text-sm tracking-wide",
-                    header.column.columnDef.meta?.hideOnPrint && "print:hidden"
-                  )}
+                  className=" text-left text-gray-700 font-semibold text-sm tracking-wide"
                 >
                   {flexRender(
                     header.column.columnDef.header,
@@ -157,14 +153,7 @@ const UserTable = ({ data }: { data: TableUser[] }) => {
           {table.getRowModel().rows.map((row) => (
             <TableRow key={row.id}>
               {row.getVisibleCells().map((cell) => (
-                <TableCell
-                  key={cell.id}
-                  className={
-                    cell.column.columnDef.meta?.hideOnPrint
-                      ? "print:hidden"
-                      : ""
-                  }
-                >
+                <TableCell key={cell.id}>
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </TableCell>
               ))}

@@ -1,14 +1,9 @@
-import { createColumnHelper, RowData } from "@tanstack/react-table";
+import { createColumnHelper } from "@tanstack/react-table";
 import { DropDownMenu } from "./drop-down-menu";
 import { TableUser } from "../dashboard/page";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 
-declare module "@tanstack/react-table" {
-  interface ColumnMeta<TData extends RowData, TValue> {
-    hideOnPrint?: boolean;
-  }
-}
 const columnHelper = createColumnHelper<TableUser>();
 import {
   Tooltip,
@@ -122,8 +117,5 @@ export const columns = [
     id: "acions",
     header: "Actions",
     cell: ({ row }) => <DropDownMenu user={row.original} />,
-    meta: {
-      hideOnPrint: true,
-    },
   }),
 ];

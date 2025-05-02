@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSessionUnified();
@@ -14,7 +14,7 @@ export async function PATCH(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const userId = await params.id;
+    const userId = (await params).id;
 
     const { status, action, source, ...updatedData } = await req.json();
 
@@ -62,7 +62,7 @@ export async function PATCH(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSessionUnified();
@@ -70,7 +70,7 @@ export async function DELETE(
     if (!session || session.user.role !== "ADMIN") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    const userId = params.id;
+    const userId = (await params).id;
 
     const Deleteuser = await prisma.user.delete({ where: { id: userId } });
 
