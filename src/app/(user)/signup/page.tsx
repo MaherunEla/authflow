@@ -5,6 +5,7 @@ import axios from "axios";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 export const signupformSchema = z.object({
   name: z.string().min(3, "Name is required"),
@@ -38,6 +39,7 @@ const Signup = () => {
         data
       );
       console.log({ res });
+      toast("Sign-up successful! You can now log in.");
       router.push("/login");
     } catch (errors) {
       console.error("Signup error", errors);

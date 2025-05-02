@@ -47,6 +47,13 @@ export const POST = async (req: Request) => {
       );
     }
 
+    if (user.status === "SUSPENDED" || user.status === "LOCKED") {
+      return NextResponse.json(
+        { erro: "Your account is currently not allowed to log in." },
+        { status: 400 }
+      );
+    }
+
     const isValidPassword = await bcrypt.compare(password, user.password);
     if (!isValidPassword) {
       await LogLoginAttempt({
@@ -85,32 +92,90 @@ export const POST = async (req: Request) => {
     const browser = parser.getBrowser().name || "Unknown Browser";
     const os = parser.getOS().name || "Unknown OS";
     const deviceName = `${browser} on ${os}`;
+    const location = await getLocationFromIP(ip);
 
-    let device = await prisma.device.findFirst({
+    const device = await prisma.device.findFirst({
       where: {
         userId: user.id,
-        ip,
-        userAgent,
+        fingerprint: fingerprint || "",
+      },
+    });
+    const hasAnyDevice = await prisma.device.findFirst({
+      where: {
+        userId: user.id,
       },
     });
 
-    if (!device) {
-      device = await prisma.device.create({
+    let deviceId;
+
+    if (!hasAnyDevice) {
+      const createdDevice = await prisma.device.create({
         data: {
           userId: user.id,
           name: deviceName,
           fingerprint: fingerprint || "",
           ip,
-          location: await getLocationFromIP(ip),
+          location,
           userAgent,
           lastUsedAt: new Date(),
+          trusted: true,
         },
       });
+      deviceId = createdDevice.id;
     } else {
-      await prisma.device.update({
-        where: { id: device.id },
-        data: { lastUsedAt: new Date() },
-      });
+      if (device) {
+        if (device.ip !== ip || device.location !== location) {
+          await prisma.$transaction([
+            prisma.suspiciousActivity.create({
+              data: {
+                userId: user.id,
+                type: "IP_OR_LOCATION_CHANGE",
+                ip,
+                location,
+                userAgent,
+              },
+            }),
+
+            prisma.device.update({
+              where: { id: device.id },
+              data: { ip, location, lastUsedAt: new Date() },
+            }),
+          ]);
+          deviceId = device.id;
+        } else {
+          await prisma.device.update({
+            where: { id: device.id },
+            data: { lastUsedAt: new Date() },
+          });
+          deviceId = device.id;
+        }
+      } else {
+        const [_, createdDevice] = await prisma.$transaction([
+          prisma.suspiciousActivity.create({
+            data: {
+              userId: user.id,
+              type: "NEW_DEVICE",
+              ip,
+              location,
+              userAgent,
+            },
+          }),
+
+          prisma.device.create({
+            data: {
+              userId: user.id,
+              name: deviceName,
+              fingerprint: fingerprint || "",
+              ip,
+              location,
+              userAgent,
+              lastUsedAt: new Date(),
+            },
+          }),
+        ]);
+
+        deviceId = createdDevice.id;
+      }
     }
 
     await prisma.session.create({
@@ -120,9 +185,34 @@ export const POST = async (req: Request) => {
         userAgent,
         location: await getLocationFromIP(ip),
         expiresAt: new Date(Date.now() + 1000 * 60 * 60),
-        deviceId: device.id,
+        deviceId,
       },
     });
+
+    const activeSessions = await prisma.session.findMany({
+      where: {
+        userId: user.id,
+        expiresAt: {
+          gt: new Date(),
+        },
+      },
+    });
+
+    const uniqueDevices = new Set(
+      activeSessions.map((s) => s.deviceId || s.ip)
+    );
+
+    if (uniqueDevices.size > 1) {
+      await prisma.suspiciousActivity.create({
+        data: {
+          userId: user.id,
+          type: "MULTI_SESSION",
+          ip,
+          location,
+          userAgent,
+        },
+      });
+    }
 
     await prisma.user.update({
       where: { email: user.email },

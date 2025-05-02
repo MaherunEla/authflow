@@ -4,10 +4,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import axios from "axios";
 import { MoreHorizontal } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 type Props = {
-  User: {
+  user: {
     id: string;
     name: string;
     email: string;
@@ -20,8 +23,48 @@ type Props = {
 };
 
 export function DropDownMenu({ user }: Props) {
+  const router = useRouter();
+  console.log(user.id);
   const handlelockaccount = async () => {
     try {
+      const res = await axios.patch(`/api/admin/users/${user.id}`, {
+        status: "LOCKED",
+        action: "lock",
+        source: "FAILED_LOGIN",
+      });
+      console.log(res);
+      toast("User account successfully locked.");
+      router.refresh();
+    } catch (error) {
+      console.error("lockaccount error", error);
+    }
+  };
+  const handleunlockaccount = async () => {
+    try {
+      const res = await axios.patch(`/api/admin/users/${user.id}`, {
+        status: "ACTIVE",
+        action: "lock",
+        source: "FAILED_LOGIN",
+      });
+      console.log(res);
+      toast("User account has been unlocked.");
+      router.refresh();
+    } catch (error) {
+      console.error("lockaccount error", error);
+    }
+  };
+  const handforcelogout = async () => {
+    try {
+      const res = await axios.delete("/api/suspend-user", {
+        data: {
+          id: user.id,
+          actionTargetType: "FAILED_LOGIN_ATTEMPT",
+          notes: "Multiple failed attempts",
+        },
+      });
+      console.log(res);
+      toast("User has been logged out.");
+      router.refresh();
     } catch (error) {
       console.error("lockaccount error", error);
     }
@@ -39,10 +82,10 @@ export function DropDownMenu({ user }: Props) {
             Lock Account
           </DropdownMenuItem>
 
-          <DropdownMenuItem onClick={handlelockaccount}>
+          <DropdownMenuItem onClick={handleunlockaccount}>
             Unlock Account
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={handlelockaccount}>
+          <DropdownMenuItem onClick={handforcelogout}>
             Force Logout
           </DropdownMenuItem>
         </DropdownMenuContent>

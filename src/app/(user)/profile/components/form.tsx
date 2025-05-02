@@ -15,6 +15,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
 import Link from "next/link";
+import { toast } from "sonner";
 
 type Props = {
   user: {
@@ -22,6 +23,7 @@ type Props = {
     name: string;
     email: string;
     twoFaEnabled: boolean;
+    updatedAt: string;
   };
 };
 
@@ -82,10 +84,8 @@ const Profileedit = ({ user }: Props) => {
         data
       );
       console.log({ res });
-      if (res.data.twoFaEnabled) {
-        router.push("/twofa");
-      }
-      router.push("/profile");
+      toast("Profile has been updated.");
+      router.refresh();
     } catch (errors) {
       if (axios.isAxiosError(errors)) {
         console.error("Profile error", errors);
@@ -209,6 +209,10 @@ const Profileedit = ({ user }: Props) => {
             <button className="inline-block rounded-lg bg-indigo-500 px-8 py-3 text-center text-sm font-semibold text-white outline-none ring-indigo-300 transition duration-100 hover:bg-indigo-600 focus-visible:ring active:bg-indigo-700 md:text-base">
               Update Setting
             </button>
+            <span className="text-sm text-gray-500">
+              updated{" "}
+              <span className="p-2">{user.updatedAt.split("T")[0]}</span>
+            </span>
           </div>
         </form>
 
@@ -233,13 +237,7 @@ const Profileedit = ({ user }: Props) => {
           </p>
 
           {user.twoFaEnabled ? (
-            <Link
-              href={`/twofa/${user.id}`}
-              className="text-base font-bold text-blue-600 lg:text-xl"
-            >
-              {" "}
-              → Want to Reset Two-Factor Authentication
-            </Link>
+            <></>
           ) : (
             <Link
               href={`/twofa/${user.id}`}

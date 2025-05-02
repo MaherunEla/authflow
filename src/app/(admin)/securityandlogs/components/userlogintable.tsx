@@ -72,7 +72,7 @@ const UserLoginTable = ({ data }: { data: userlogin[] }) => {
     initialState: {
       pagination: {
         pageIndex: 0,
-        pageSize: 2,
+        pageSize: 10,
       },
     },
   });
@@ -86,42 +86,17 @@ const UserLoginTable = ({ data }: { data: userlogin[] }) => {
           onChange={(e) => setFilter(e.target.value)}
           className="max-w-sm"
         />
-        <Select
-          onValueChange={(value) =>
-            table
-              .getColumn("role")
-              ?.setFilterValue(value === "all" ? undefined : value)
-          }
-        >
-          <SelectTrigger>Filter By Role</SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All</SelectItem>
-            <SelectItem value="user">User</SelectItem>
-            <SelectItem value="Guest">Guest</SelectItem>
-          </SelectContent>
-        </Select>
-        <Select
-          onValueChange={(value) =>
-            table
-              .getColumn("status")
-              ?.setFilterValue(value === "all" ? undefined : value)
-          }
-        >
-          <SelectTrigger>Filter By Status</SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All</SelectItem>
-            <SelectItem value="active">Active</SelectItem>
-            <SelectItem value="suspend">Suspend</SelectItem>
-          </SelectContent>
-        </Select>
       </div>
 
       <Table>
-        <TableHeader>
+        <TableHeader className="bg-blue-50">
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <TableHead key={header.id}>
+                <TableHead
+                  key={header.id}
+                  className=" text-left text-gray-700 font-semibold text-sm tracking-wide"
+                >
                   {flexRender(
                     header.column.columnDef.header,
                     header.getContext()
@@ -194,7 +169,7 @@ const UserLoginTable = ({ data }: { data: userlogin[] }) => {
                 <SelectValue placeholder="Page Size" />
               </SelectTrigger>
               <SelectContent>
-                {[2, 5, 30, 40, 50].map((pageSize) => (
+                {[10, 20, 30, 40, 50].map((pageSize) => (
                   <SelectItem key={pageSize} value={String(pageSize)}>
                     {pageSize}
                   </SelectItem>

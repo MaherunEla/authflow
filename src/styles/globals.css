@@ -141,3 +141,36 @@
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 }
+
+@media print {
+  table {
+    width: 100% !important;
+    table-layout: auto !important;
+  }
+
+  th,
+  td {
+    white-space: normal !important;
+    word-break: break-word !important;
+  }
+
+  body {
+    overflow: visible !important;
+    visibility: hidden;
+  }
+
+  #print-section,
+  #print-section * {
+    visibility: visible;
+  }
+
+  #print-section {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+  }
+  .print\:hidden {
+    display: none !important;
+  }
+}

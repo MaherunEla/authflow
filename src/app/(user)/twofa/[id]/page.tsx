@@ -1,16 +1,18 @@
 "use client";
 
 import Image from "next/image";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 
 export default function TwoFactorSetup() {
   const params = useParams();
+  const router = useRouter();
   const id = params.id as string;
 
   const [qrCode, setQrCode] = useState<string | null>(null);
   const [code, setCode] = useState("");
-  const [success, setSuccess] = useState(false);
+  const [tempToken, setTempToken] = useState<string | null>(null);
 
   const generateQRCode = async () => {
     const enable = await fetch("/api/enable-2fa", {
@@ -22,17 +24,27 @@ export default function TwoFactorSetup() {
     const data = await enable.json();
     setQrCode(data.qr);
     console.log(qrCode);
+    setTempToken(data.tempToken);
   };
 
   const verifyCode = async () => {
     const res = await fetch("/api/verify-2fa", {
       method: "POST",
-      body: JSON.stringify({ code }),
+      body: JSON.stringify({
+        token: code,
+        tempToken: tempToken,
+      }),
       headers: { "Content-Type": "application/json" },
     });
 
     const data = await res.json();
-    if (data.success) setSuccess(true);
+    if (data.success) {
+      toast("✅ Two-factor authentication verified.");
+      router.refresh();
+      router.replace("/profile");
+    } else {
+      toast.error(data.error || "Verification failed");
+    }
   };
 
   return (
@@ -78,7 +90,6 @@ export default function TwoFactorSetup() {
           </div>
         </div>
       )}
-      {success && <p>2FA Enabled Successfully!</p>}
     </div>
   );
 }

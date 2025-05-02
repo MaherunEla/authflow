@@ -4,9 +4,9 @@ import { prisma } from "./prisma";
 export async function failedLogin() {
   const session = await getServerSessionUnified();
 
-  //   if (!session || session.user.role !== "ADMIN") {
-  //     throw new Error("Unauthorized");
-  //   }
+  if (!session || session.user.role !== "ADMIN") {
+    throw new Error("Unauthorized");
+  }
 
   const attempts = await prisma.loginAttempt.groupBy({
     by: ["email"],

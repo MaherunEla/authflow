@@ -14,6 +14,15 @@ import {
   ColumnFiltersState,
 } from "@tanstack/react-table";
 import { Input } from "@/components/ui/input";
+
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import {
   Pagination,
   PaginationContent,
@@ -23,14 +32,6 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 
 import {
   Select,
@@ -44,11 +45,12 @@ export type suspiciousUser = {
   id: string;
   name: string;
   email: string;
-  activitytype: string;
-  time: string;
-  ipaddress: string;
+  type: string;
+  createdAt: string;
+  ip: string;
   location: string;
-  action: string;
+  actionTaken: string;
+  userId: string;
 };
 
 const SuspiciousTable = ({ data }: { data: suspiciousUser[] }) => {
@@ -73,7 +75,7 @@ const SuspiciousTable = ({ data }: { data: suspiciousUser[] }) => {
     initialState: {
       pagination: {
         pageIndex: 0,
-        pageSize: 2,
+        pageSize: 15,
       },
     },
   });
@@ -90,39 +92,31 @@ const SuspiciousTable = ({ data }: { data: suspiciousUser[] }) => {
         <Select
           onValueChange={(value) =>
             table
-              .getColumn("role")
+              .getColumn("type")
               ?.setFilterValue(value === "all" ? undefined : value)
           }
         >
-          <SelectTrigger>Filter By Role</SelectTrigger>
+          <SelectTrigger>Filter By ActivityType</SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All</SelectItem>
-            <SelectItem value="user">User</SelectItem>
-            <SelectItem value="Guest">Guest</SelectItem>
-          </SelectContent>
-        </Select>
-        <Select
-          onValueChange={(value) =>
-            table
-              .getColumn("status")
-              ?.setFilterValue(value === "all" ? undefined : value)
-          }
-        >
-          <SelectTrigger>Filter By Status</SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All</SelectItem>
-            <SelectItem value="active">Active</SelectItem>
-            <SelectItem value="suspend">Suspend</SelectItem>
+            <SelectItem value="MULTI_SESSION">MULTI_SESSION</SelectItem>
+            <SelectItem value="NEW_DEVICE">NEW_DEVICE</SelectItem>
+            <SelectItem value="IP_OR_LOCATION_CHANGE">
+              IP_OR_LOCATION_CHANGE
+            </SelectItem>
           </SelectContent>
         </Select>
       </div>
 
       <Table>
-        <TableHeader>
+        <TableHeader className="bg-blue-50">
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <TableHead key={header.id}>
+                <TableHead
+                  key={header.id}
+                  className="text-left text-gray-700 font-semibold text-sm tracking-wide"
+                >
                   {flexRender(
                     header.column.columnDef.header,
                     header.getContext()
@@ -144,6 +138,66 @@ const SuspiciousTable = ({ data }: { data: suspiciousUser[] }) => {
           ))}
         </TableBody>
       </Table>
+      <Pagination>
+        <PaginationContent>
+          <PaginationItem>
+            <button
+              onClick={() => table.firstPage()}
+              disabled={!table.getCanPreviousPage()}
+            >
+              {" "}
+              <PaginationPrevious href="#" />
+            </button>
+          </PaginationItem>
+          <PaginationItem>
+            <button
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
+            >
+              <PaginationLink href="#">1</PaginationLink>
+            </button>
+          </PaginationItem>
+          <PaginationItem>
+            <button
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
+            >
+              <PaginationLink href="#">2</PaginationLink>
+            </button>
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationEllipsis />
+          </PaginationItem>
+          <PaginationItem>
+            <button
+              onClick={() => table.lastPage()}
+              disabled={!table.getCanNextPage()}
+            >
+              <PaginationNext href="#" />
+            </button>
+          </PaginationItem>
+
+          <PaginationItem>
+            <Select
+              value={String(table.getState().pagination.pageSize)}
+              onValueChange={(value) => {
+                table.setPageSize(Number(value));
+              }}
+            >
+              <SelectTrigger className="w-[80px]">
+                <SelectValue placeholder="Page Size" />
+              </SelectTrigger>
+              <SelectContent>
+                {[10, 15, 20, 30, 40, 50].map((pageSize) => (
+                  <SelectItem key={pageSize} value={String(pageSize)}>
+                    {pageSize}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
     </div>
   );
 };

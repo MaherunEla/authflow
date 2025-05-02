@@ -37,6 +37,7 @@ import {
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { DialogClose } from "@radix-ui/react-dialog";
+import { toast } from "sonner";
 
 type Props = {
   user: {
@@ -91,6 +92,7 @@ export function DropDownMenu({ user }: Props) {
     try {
       const res = await axios.patch(`/api/admin/users/${user.id}`, data);
       console.log(res);
+      toast("User updated successfully.");
       router.refresh();
     } catch (error) {
       console.error("Update error", error);
@@ -101,8 +103,11 @@ export function DropDownMenu({ user }: Props) {
     try {
       const res = await axios.patch(`/api/admin/users/${user.id}`, {
         status: "ACTIVE",
+        action: "lock",
+        source: "USER_MANAGEMENT",
       });
       console.log(res);
+      toast("User Status updated successfully.");
       router.refresh();
     } catch (error) {
       console.error("Update error", error);
@@ -127,6 +132,7 @@ export function DropDownMenu({ user }: Props) {
         reason: warnReason,
       });
       console.log(res);
+      toast("User has been warned.");
       router.refresh();
     } catch (error) {
       console.error("warn error", error);
@@ -143,6 +149,7 @@ export function DropDownMenu({ user }: Props) {
         reason: suspendReason,
       });
       console.log(res);
+      toast("Suspension successful. They can no longer log in.");
       router.refresh();
     } catch (error) {
       console.error("Suspend error", error);
@@ -155,6 +162,9 @@ export function DropDownMenu({ user }: Props) {
     try {
       const res = await axios.delete(`/api/admin/users/${user.id}`);
       console.log(res);
+      toast("User deleted", {
+        description: "This action cannot be undone.",
+      });
     } catch (error) {
       console.error("user Delete error", error);
     }

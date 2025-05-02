@@ -5,6 +5,7 @@ import {
   UsersIcon,
   ChartNoAxesCombined,
   FolderLock,
+  House,
 } from "lucide-react";
 
 import {
@@ -19,39 +20,47 @@ import {
 } from "@/components/ui/sidebar";
 import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";
+interface AppSidebarProps {
+  username: string;
+  useremail: string;
+}
 
-// Menu items.
-const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-  navMain: [
-    {
-      title: "User Management",
-      url: "/dashboard",
-      icon: UsersIcon,
+export function AppSidebar({ username, useremail }: AppSidebarProps) {
+  const data = {
+    user: {
+      name: username,
+      email: useremail,
+      avatar: "https://github.com/shadcn.png",
     },
-    {
-      title: "Security & Logs",
-      url: "/securityandlogs",
-      icon: FolderLock,
-    },
-    {
-      title: "Authentication",
-      url: "/authentication",
-      icon: Fingerprint,
-    },
-    {
-      title: "Analytics",
-      url: "analytics",
-      icon: ChartNoAxesCombined,
-    },
-  ],
-};
+    navMain: [
+      {
+        title: "User Management",
+        url: "/dashboard",
+        icon: UsersIcon,
+      },
+      {
+        title: "Security & Logs",
+        url: "/securityandlogs",
+        icon: FolderLock,
+      },
+      {
+        title: "Authentication",
+        url: "/authentication",
+        icon: Fingerprint,
+      },
+      {
+        title: "Analytics",
+        url: "/analytics",
+        icon: ChartNoAxesCombined,
+      },
+      {
+        title: "Home",
+        url: "/",
+        icon: House,
+      },
+    ],
+  };
 
-export function AppSidebar() {
   return (
     <Sidebar>
       <SidebarHeader>

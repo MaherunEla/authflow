@@ -9,66 +9,90 @@ datasource db {
 }
 
 model User {
-  id              String     @id @default(uuid())
-  name            String
-  email           String     @unique
-  password        String
-  role            Role       @default(USER)
-  twoFaEnabled    Boolean    @default(false)
-  twoFaSecret     String?
-  createdAt       DateTime   @default(now())
-  status          UserStatus @default(ACTIVE)
-  statusUpdatedAt DateTime?
-  suspendReason   String?
-  warningReason   String?
-  lastLoginAt     DateTime?
-  lastLoginIp     String?
-  updatedAt       DateTime   @updatedAt
-
-  sessions      Session[]
-  loginAttempts LoginAttempt[]
-  devices       Device[]
+  id                 String               @id @default(uuid())
+  name               String
+  email              String               @unique
+  password           String
+  role               Role                 @default(USER)
+  twoFaEnabled       Boolean              @default(false)
+  twoFaSecret        String?
+  createdAt          DateTime             @default(now())
+  status             UserStatus           @default(ACTIVE)
+  statusUpdatedAt    DateTime?
+  suspendReason      String?
+  warningReason      String?
+  lastLoginAt        DateTime?
+  lastLoginIp        String?
+  updatedAt          DateTime             @updatedAt
+  AdminActionLog     AdminActionLog[]
+  devices            Device[]
+  loginAttempts      LoginAttempt[]
+  sessions           Session[]
+  SuspiciousActivity SuspiciousActivity[]
 }
 
 model Session {
   id        String   @id @default(cuid())
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String
-  device    Device?  @relation(fields: [deviceId], references: [id])
   deviceId  String?
   ip        String
   userAgent String
   location  String?
   createdAt DateTime @default(now())
   expiresAt DateTime
+  device    Device?  @relation(fields: [deviceId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Device {
   id          String    @id @default(cuid())
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      String
   fingerprint String
   name        String?
   ip          String
   location    String?
-  userAgent   String?
   trusted     Boolean   @default(false)
   lastUsedAt  DateTime  @default(now())
   createdAt   DateTime  @default(now())
+  userAgent   String?
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   sesssions   Session[]
 }
 
 model LoginAttempt {
   id        String      @id @default(cuid())
-  user      User?       @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String?
   email     String
-  success   LoginStatus
   reason    String?
   ip        String
   location  String?
   userAgent String?
   createdAt DateTime    @default(now())
+  success   LoginStatus
+  user      User?       @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model SuspiciousActivity {
+  id          String   @id @default(cuid())
+  userId      String
+  type        String
+  ip          String
+  location    String?
+  userAgent   String?
+  createdAt   DateTime @default(now())
+  actionTaken String?
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+model AdminActionLog {
+  id               String           @id @default(cuid())
+  adminId          String
+  actionTargetType ActionTargetType
+  targetId         String
+  actionType       AdminActionType
+  notes            String?
+  createdAt        DateTime         @default(now())
+  admin            User             @relation(fields: [adminId], references: [id])
 }
 
 enum LoginStatus {
@@ -87,4 +111,22 @@ enum UserStatus {
   WARNED
   SUSPENDED
   LOCKED
+}
+
+enum ActionTargetType {
+  FAILED_LOGIN
+  SUSPICIOUS_ACTIVITY
+  USER_MANAGEMENT
+  AUTHENTICATION
+}
+
+enum AdminActionType {
+  LOCK_ACCOUNT
+  UNLOCK_ACCOUNT
+  FORCE_LOGOUT
+  SEND_ALERT
+  WARN_USER
+  SUSPEND_USER
+  TWOFA_RESET
+  UPDATE_USER_STATUS
 }

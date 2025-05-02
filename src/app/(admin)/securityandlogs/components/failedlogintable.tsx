@@ -25,10 +25,21 @@ import {
 } from "@/components/ui/table";
 
 import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 
 export type userfaillogin = {
@@ -64,7 +75,7 @@ const FailedLoginTable = ({ data }: { data: userfaillogin[] }) => {
     initialState: {
       pagination: {
         pageIndex: 0,
-        pageSize: 2,
+        pageSize: 10,
       },
     },
   });
@@ -78,20 +89,7 @@ const FailedLoginTable = ({ data }: { data: userfaillogin[] }) => {
           onChange={(e) => setFilter(e.target.value)}
           className="max-w-sm"
         />
-        <Select
-          onValueChange={(value) =>
-            table
-              .getColumn("role")
-              ?.setFilterValue(value === "all" ? undefined : value)
-          }
-        >
-          <SelectTrigger>Filter By Role</SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All</SelectItem>
-            <SelectItem value="user">User</SelectItem>
-            <SelectItem value="Guest">Guest</SelectItem>
-          </SelectContent>
-        </Select>
+
         <Select
           onValueChange={(value) =>
             table
@@ -102,18 +100,22 @@ const FailedLoginTable = ({ data }: { data: userfaillogin[] }) => {
           <SelectTrigger>Filter By Status</SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All</SelectItem>
-            <SelectItem value="active">Active</SelectItem>
-            <SelectItem value="suspend">Suspend</SelectItem>
+            <SelectItem value="Normal">Normal</SelectItem>
+            <SelectItem value="Locked">Locked</SelectItem>
+            <SelectItem value="Suspicious">Suspicious</SelectItem>
           </SelectContent>
         </Select>
       </div>
 
       <Table>
-        <TableHeader>
+        <TableHeader className="bg-blue-50">
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <TableHead key={header.id}>
+                <TableHead
+                  key={header.id}
+                  className=" text-left text-gray-700 font-semibold text-sm tracking-wide"
+                >
                   {flexRender(
                     header.column.columnDef.header,
                     header.getContext()
@@ -124,17 +126,83 @@ const FailedLoginTable = ({ data }: { data: userfaillogin[] }) => {
           ))}
         </TableHeader>
         <TableBody>
-          {table.getRowModel().rows.map((row) => (
-            <TableRow key={row.id}>
-              {row.getVisibleCells().map((cell) => (
-                <TableCell key={cell.id}>
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </TableCell>
-              ))}
-            </TableRow>
-          ))}
+          {table.getRowModel().rows.map((row) => {
+            const isFailedLogin = row.original.attempts >= 3;
+            return (
+              <TableRow key={row.id}>
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell
+                    key={cell.id}
+                    className={isFailedLogin ? "bg-red-200 text-red-800" : ""}
+                  >
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                ))}
+              </TableRow>
+            );
+          })}
         </TableBody>
       </Table>
+      <Pagination>
+        <PaginationContent>
+          <PaginationItem>
+            <button
+              onClick={() => table.firstPage()}
+              disabled={!table.getCanPreviousPage()}
+            >
+              {" "}
+              <PaginationPrevious href="#" />
+            </button>
+          </PaginationItem>
+          <PaginationItem>
+            <button
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
+            >
+              <PaginationLink href="#">1</PaginationLink>
+            </button>
+          </PaginationItem>
+          <PaginationItem>
+            <button
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
+            >
+              <PaginationLink href="#">2</PaginationLink>
+            </button>
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationEllipsis />
+          </PaginationItem>
+          <PaginationItem>
+            <button
+              onClick={() => table.lastPage()}
+              disabled={!table.getCanNextPage()}
+            >
+              <PaginationNext href="#" />
+            </button>
+          </PaginationItem>
+
+          <PaginationItem>
+            <Select
+              value={String(table.getState().pagination.pageSize)}
+              onValueChange={(value) => {
+                table.setPageSize(Number(value));
+              }}
+            >
+              <SelectTrigger className="w-[80px]">
+                <SelectValue placeholder="Page Size" />
+              </SelectTrigger>
+              <SelectContent>
+                {[10, 20, 30, 40, 50].map((pageSize) => (
+                  <SelectItem key={pageSize} value={String(pageSize)}>
+                    {pageSize}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
     </div>
   );
 };

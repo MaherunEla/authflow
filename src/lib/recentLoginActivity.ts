@@ -4,9 +4,9 @@ import { prisma } from "./prisma";
 export async function recentLoginActivity() {
   const session = await getServerSessionUnified();
 
-  //   if (!session || session.user.role !== "ADMIN") {
-  //     throw new Error("Unauthorized");
-  //   }
+  if (!session || session.user.role !== "ADMIN") {
+    throw new Error("Unauthorized");
+  }
 
   const users = await prisma.session.findMany({
     select: {
@@ -25,6 +25,9 @@ export async function recentLoginActivity() {
           name: true,
         },
       },
+    },
+    orderBy: {
+      createdAt: "desc",
     },
   });
 

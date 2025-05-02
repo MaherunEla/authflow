@@ -4,6 +4,7 @@ export type SessionPayload = {
     email: string;
     name?: string;
     role?: string;
+    twoFaEnabled?: boolean;
   };
   expires: Date;
 };

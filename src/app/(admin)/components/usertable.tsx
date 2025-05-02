@@ -40,6 +40,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { TableUser } from "../dashboard/page";
+import { downloadCSV } from "@/lib/downloadCSV";
+import { cn } from "@/lib/utils";
 export type Role = "ADMIN" | "USER" | "GUEST";
 
 const UserTable = ({ data }: { data: TableUser[] }) => {
@@ -64,14 +66,14 @@ const UserTable = ({ data }: { data: TableUser[] }) => {
     initialState: {
       pagination: {
         pageIndex: 0,
-        pageSize: 2,
+        pageSize: 10,
       },
     },
   });
 
   return (
     <div className="space-y-4 px-5 ">
-      <div className="flex  items-start gap-4">
+      <div className="flex  items-start gap-4 print:hidden">
         <Input
           placeholder="Search user..."
           value={filter}
@@ -102,18 +104,46 @@ const UserTable = ({ data }: { data: TableUser[] }) => {
           <SelectTrigger>Filter By Status</SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All</SelectItem>
-            <SelectItem value="active">Active</SelectItem>
-            <SelectItem value="suspend">Suspend</SelectItem>
+            <SelectItem value="ACTIVE">Active</SelectItem>
+            <SelectItem value="SUSPEND">Suspend</SelectItem>
+            <SelectItem value="WARNED">warned</SelectItem>
+            <SelectItem value="LOCKED">locked</SelectItem>
           </SelectContent>
         </Select>
       </div>
 
+      <div className="flex justify-end gap-4 mb-4 print:hidden">
+        <button
+          onClick={() => window.print()}
+          className="rounded bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
+        >
+          🖨️ Print Table
+        </button>
+
+        <button
+          onClick={() =>
+            downloadCSV(
+              table.getFilteredRowModel().rows.map((row) => row.original),
+              "users_report.csv"
+            )
+          }
+          className="rounded bg-green-600 px-4 py-2 text-sm font-semibold text-white hover:bg-green-700"
+        >
+          📁 Download CSV
+        </button>
+      </div>
       <Table>
-        <TableHeader>
+        <TableHeader className="bg-blue-50 ">
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <TableHead key={header.id}>
+                <TableHead
+                  key={header.id}
+                  className={cn(
+                    " text-left text-gray-700 font-semibold text-sm tracking-wide",
+                    header.column.columnDef.meta?.hideOnPrint && "print:hidden"
+                  )}
+                >
                   {flexRender(
                     header.column.columnDef.header,
                     header.getContext()
@@ -127,7 +157,14 @@ const UserTable = ({ data }: { data: TableUser[] }) => {
           {table.getRowModel().rows.map((row) => (
             <TableRow key={row.id}>
               {row.getVisibleCells().map((cell) => (
-                <TableCell key={cell.id}>
+                <TableCell
+                  key={cell.id}
+                  className={
+                    cell.column.columnDef.meta?.hideOnPrint
+                      ? "print:hidden"
+                      : ""
+                  }
+                >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </TableCell>
               ))}
@@ -136,7 +173,7 @@ const UserTable = ({ data }: { data: TableUser[] }) => {
         </TableBody>
       </Table>
 
-      <Pagination>
+      <Pagination className="print:hidden">
         <PaginationContent>
           <PaginationItem>
             <button
@@ -186,7 +223,7 @@ const UserTable = ({ data }: { data: TableUser[] }) => {
                 <SelectValue placeholder="Page Size" />
               </SelectTrigger>
               <SelectContent>
-                {[2, 5, 30, 40, 50].map((pageSize) => (
+                {[10, 20, 30, 40, 50].map((pageSize) => (
                   <SelectItem key={pageSize} value={String(pageSize)}>
                     {pageSize}
                   </SelectItem>

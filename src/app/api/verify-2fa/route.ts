@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import speakeasy from "speakeasy";
 import { verifyTempToken } from "@/lib/tempToken";
 import { createCustomJWT } from "@/lib/jwt";
+import { cookies } from "next/headers";
 
 export async function POST(req: Request) {
   const { tempToken, token } = await req.json();
@@ -26,12 +27,27 @@ export async function POST(req: Request) {
     return Response.json({ error: "Invalid 2FA code" }, { status: 400 });
   }
 
-  const jwt = createCustomJWT(user.id);
+  const jwt = createCustomJWT({
+    id: user.id,
+    email: user.email,
+    name: user.name || "",
+    role: user.role,
+    twoFaEnabled: user.twoFaEnabled,
+  });
+
+  const Cookies = await cookies();
+
+  Cookies.set("custom_jwt", jwt, {
+    httpOnly: true,
+    path: "/",
+    maxAge: 60 * 60,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+  });
 
   return new Response(JSON.stringify({ success: true }), {
     status: 200,
     headers: {
-      "Set-Cookie": `custom_jwt=${jwt}; Path=/; HttpOnly; Max-Age=604800;`,
       "Content-Type": "application/json",
     },
   });

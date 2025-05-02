@@ -8,15 +8,21 @@ import { LoginStatus } from "@prisma/client";
 import { LogLoginAttempt } from "./logLoginAttempt";
 import * as UAParser from "ua-parser-js";
 import { getLocationFromIP } from "./ip";
+import { redirect } from "next/navigation";
+import { JWTExpired } from "jose/errors";
 
-const secretKey = "secret";
-const key = new TextEncoder().encode(secretKey);
+const key = new TextEncoder().encode(process.env.JWT_SECRET!);
 
 export async function encrypt(payload: SessionPayload) {
-  return await new SignJWT(payload)
+  const expSeconds = Math.floor(payload.expires.getTime() / 1000);
+  const flatPayload = {
+    ...payload.user,
+    expires: payload.expires.toISOString(),
+  };
+  return await new SignJWT(flatPayload)
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
-    .setExpirationTime("1h")
+    .setExpirationTime(expSeconds)
     .sign(key);
 }
 
@@ -25,9 +31,24 @@ export async function decrypt(input: string): Promise<SessionPayload | null> {
     const { payload } = await jwtVerify(input, key, {
       algorithms: ["HS256"],
     });
-    return payload as SessionPayload;
+    const session: SessionPayload = {
+      user: {
+        id: payload.id as string,
+        email: payload.email as string,
+        name: payload.name as string,
+        role: payload.role as string,
+        twoFaEnabled: payload.twoFaEnabled as boolean,
+      },
+      expires: new Date(payload.expires as string),
+    };
+    return session;
   } catch (error) {
-    console.error("JWT verification failed:", error);
+    if (error instanceof JWTExpired) {
+      console.warn("JWT expired");
+    } else {
+      console.error("JWT verification failed:", error);
+    }
+
     return null;
   }
 }
@@ -202,6 +223,8 @@ export async function logout() {
     httpOnly: true,
     secure: true,
   });
+
+  redirect("/login");
 }
 
 export async function getSession() {
@@ -221,26 +244,30 @@ export async function updateSession(
 
   try {
     const session = await decrypt(token);
-    if (!session)
-      return NextResponse.json({ error: "Invalid session" }, { status: 401 });
+    if (!session) {
+      response.cookies.delete("custom_jwt");
+      return NextResponse.redirect(new URL("/login", request.url));
+    }
 
     const now = new Date();
     const expires = new Date(session.expires);
 
     if (expires < now) {
       response.cookies.delete("custom_jwt");
-      return response;
+      return NextResponse.redirect(new URL("/login", request.url));
     }
 
-    // Optional: refresh session (extend 1 more hour)
     session.expires = new Date(now.getTime() + 60 * 60 * 1000);
     const newToken = await encrypt(session);
+
+    response.cookies.delete("custom_jwt");
 
     response.cookies.set("custom_jwt", newToken, {
       httpOnly: true,
       expires: session.expires,
       path: "/",
       secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
     });
 
     return response;

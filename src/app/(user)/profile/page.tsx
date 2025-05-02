@@ -1,34 +1,34 @@
 import React from "react";
 import Profileedit from "./components/form";
-import { prisma } from "@/lib/prisma";
 import { getServerSessionUnified } from "@/lib/getServerSessionUnified";
 import { redirect } from "next/navigation";
+import { getprofiledata } from "@/lib/profiledata";
 
 export default async function Profilepage() {
   const session = await getServerSessionUnified();
-
   if (!session) {
     redirect("/login");
   }
 
-  // Fetch user from DB using email from session
-  const user = await prisma.user.findUnique({
-    where: { email: session.user?.email },
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      password: false,
-      twoFaEnabled: true,
-    }, // Don't fetch password!
-  });
+  const user = await getprofiledata();
+  let userdata;
+  if (user) {
+    userdata = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      twoFaEnabled: user.twoFaEnabled,
+      updatedAt: user.updatedAt ? user.updatedAt.toISOString() : "",
+    };
+  } else {
+    userdata = {
+      id: "",
+      name: session.user.name || "",
+      email: session.user.email || "",
+      twoFaEnabled: false,
+      updatedAt: "",
+    };
+  }
 
-  const defaultUser = {
-    id: "",
-    name: "Guest",
-    email: "N/A",
-    twoFaEnabled: false,
-  };
-
-  return <Profileedit user={user || defaultUser} />;
+  return <Profileedit user={userdata} />;
 }

@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 
 import speakeasy from "speakeasy";
 import QRCode from "qrcode";
+import { createTempToken } from "@/lib/tempToken";
 
 export async function POST(req: Request) {
   try {
@@ -11,6 +12,8 @@ export async function POST(req: Request) {
 
     const qr = await QRCode.toDataURL(secret.otpauth_url!);
 
+    const tempToken = createTempToken(id);
+
     await prisma.user.update({
       where: { id: id },
       data: {
@@ -18,7 +21,7 @@ export async function POST(req: Request) {
         twoFaEnabled: true,
       },
     });
-    return Response.json({ qr, otpauth_url: secret.otpauth_url });
+    return Response.json({ qr, tempToken });
   } catch (error) {
     console.error("2FA setup error", error);
     return Response.json({ error: "Failed to enalbe 2FA" }, { status: 500 });

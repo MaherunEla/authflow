@@ -7,8 +7,10 @@ type User = {
   name: string;
   password?: string;
   email: string;
-  twoFactor: string;
+  twoFaEnabled: boolean;
+  twoFaSecret?: string | null;
 };
+
 export const PUT = async (req: Request) => {
   try {
     const data = await req.json();
@@ -21,7 +23,7 @@ export const PUT = async (req: Request) => {
     const updateData: User = {
       name: data.name,
       email: data.email,
-      twoFactor: data.twoFactor,
+      twoFaEnabled: data.twoFaEnabled,
     };
 
     if (data.password && data.newpassword) {
@@ -47,6 +49,9 @@ export const PUT = async (req: Request) => {
       }
 
       updateData.password = await bcrypt.hash(data.newpassword, 10);
+    }
+    if (!data.twoFaEnabled) {
+      updateData.twoFaSecret = null;
     }
 
     const updateuser = await prisma.user.update({
