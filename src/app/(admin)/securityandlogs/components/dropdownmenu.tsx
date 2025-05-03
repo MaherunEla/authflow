@@ -58,7 +58,7 @@ export function DropDownMenu({ user }: Props) {
       const res = await axios.delete("/api/suspend-user", {
         data: {
           id: user.id,
-          actionTargetType: "FAILED_LOGIN_ATTEMPT",
+          actionTargetType: "FAILED_LOGIN",
           notes: "Multiple failed attempts",
         },
       });

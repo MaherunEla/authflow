@@ -118,9 +118,15 @@ export const columns = [
           label = "Update Status";
           colorClass = "text-gray-700 font-semibold";
           break;
+        case "TWOFA_RESET":
+          icon = "🔐";
+          label = "2FA Reset";
+          colorClass = "text-purple-600 font-semibold";
+          break;
         default:
-          label = "action";
+          label = "Unknown Action";
           colorClass = "text-gray-600";
+          icon = "❓";
       }
       return (
         <div className={`flex items-center gap-2 ${colorClass}`}>

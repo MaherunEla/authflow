@@ -91,7 +91,7 @@ const UserTable = ({ data }: { data: TableUser[] }) => {
             <SelectItem value="all">All</SelectItem>
             <SelectItem value="user">User</SelectItem>
             <SelectItem value="Guest">Guest</SelectItem>
-            <SelectItem value="ADMIN">ADMIN</SelectItem>
+            <SelectItem value="ADMIN">Admin</SelectItem>
           </SelectContent>
         </Select>
         <Select

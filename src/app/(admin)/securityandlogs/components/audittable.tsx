@@ -107,6 +107,7 @@ const AuditTable = ({ data }: { data: audit[] }) => {
             <SelectItem value="UPDATE_USER_STATUS">
               UPDATE_USER_STATUS
             </SelectItem>
+            <SelectItem value=" TWOFA_RESET">TWOFA_RESET</SelectItem>
           </SelectContent>
         </Select>
       </div>

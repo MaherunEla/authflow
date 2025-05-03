@@ -165,6 +165,7 @@ export function DropDownMenu({ user }: Props) {
       toast("User deleted", {
         description: "This action cannot be undone.",
       });
+      router.refresh();
     } catch (error) {
       console.error("user Delete error", error);
     }
