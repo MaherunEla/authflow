@@ -8,6 +8,12 @@ export async function getprofiledata() {
     throw new Error("Unauthorized");
   }
 
+  if (!session?.user?.email) {
+    console.warn("Email not available in session, using fallback value.");
+
+    session.user.email = "Email not available";
+  }
+
   const user = await prisma.user.findUnique({
     where: { email: session.user?.email },
     select: {
