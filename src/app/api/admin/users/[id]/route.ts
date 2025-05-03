@@ -72,6 +72,19 @@ export async function DELETE(
     }
     const userId = (await params).id;
 
+    const logsCount = await prisma.adminActionLog.count({
+      where: { adminId: userId },
+    });
+
+    if (logsCount > 0) {
+      return NextResponse.json(
+        {
+          error: "Cannot delete admin with existing action logs.",
+        },
+        { status: 400 }
+      );
+    }
+
     const Deleteuser = await prisma.user.delete({ where: { id: userId } });
 
     return NextResponse.json(Deleteuser);

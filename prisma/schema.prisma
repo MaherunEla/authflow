@@ -82,7 +82,7 @@ model SuspiciousActivity {
   userAgent   String?
   createdAt   DateTime @default(now())
   actionTaken String?
-  user        User     @relation(fields: [userId], references: [id])
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model AdminActionLog {
