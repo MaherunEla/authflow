@@ -1,37 +1,58 @@
 // lib/prisma.ts
+
 import { PrismaClient } from "@prisma/client";
-let prisma: PrismaClient;
 
-if (process.env.NODE_ENV === "production") {
-  prisma = new PrismaClient({
-    // @ts-expect-error - suppress TS error for internal field
-    __internal: {
-      engine: {
-        statement_cache: false,
-      },
+const prismaOptions = {
+  __internal: {
+    engine: {
+      statement_cache: false,
     },
-  });
-} else {
-  // In dev mode, reuse the client to avoid exhausting connections
-  const globalForPrisma = globalThis as unknown as {
-    prisma: PrismaClient | undefined;
-  };
+  },
+} as unknown as ConstructorParameters<typeof PrismaClient>[0];
 
-  if (!globalForPrisma.prisma) {
-    globalForPrisma.prisma = new PrismaClient({
-      // @ts-expect-error - suppress TS error for internal field
-      __internal: {
-        engine: {
-          statement_cache: false,
-        },
-      },
-    });
-  }
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClient | undefined;
+};
 
-  prisma = globalForPrisma.prisma;
-}
+export const prisma =
+  process.env.NODE_ENV === "production"
+    ? new PrismaClient(prismaOptions)
+    : (globalForPrisma.prisma ?? new PrismaClient(prismaOptions));
 
-export { prisma };
+if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+
+// let prisma: PrismaClient;
+
+// if (process.env.NODE_ENV === "production") {
+//   prisma = new PrismaClient({
+//     // @ts-expect-error - suppress TS error for internal field
+//     __internal: {
+//       engine: {
+//         statement_cache: false,
+//       },
+//     },
+//   });
+// } else {
+//   // In dev mode, reuse the client to avoid exhausting connections
+//   const globalForPrisma = globalThis as unknown as {
+//     prisma: PrismaClient | undefined;
+//   };
+
+//   if (!globalForPrisma.prisma) {
+//     globalForPrisma.prisma = new PrismaClient({
+//       // @ts-expect-error - suppress TS error for internal field
+//       __internal: {
+//         engine: {
+//           statement_cache: false,
+//         },
+//       },
+//     });
+//   }
+
+//   prisma = globalForPrisma.prisma;
+// }
+
+// export { prisma };
 
 // import { PrismaClient } from "@prisma/client";
 
