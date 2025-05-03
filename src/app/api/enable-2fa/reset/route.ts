@@ -28,9 +28,12 @@ export async function POST(req: Request) {
       },
     });
 
-    return Response.json({ resent });
+    return NextResponse.json({ resent });
   } catch (error) {
     console.error("2FA setup error", error);
-    return Response.json({ error: "Failed to enalbe 2FA" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to enalbe 2FA" },
+      { status: 500 }
+    );
   }
 }
