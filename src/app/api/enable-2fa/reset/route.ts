@@ -2,12 +2,19 @@ import { getServerSessionUnified } from "@/lib/getServerSessionUnified";
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
-export async function POST(req: Request) {
+export async function PATCH(req: Request) {
   try {
     const { id, actionTargetType, notes } = await req.json();
     const session = await getServerSessionUnified();
+
     if (!session || session.user.role !== "ADMIN") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    if (!id) {
+      return NextResponse.json(
+        { error: "User ID is required" },
+        { status: 400 }
+      );
     }
 
     const resent = await prisma.user.update({

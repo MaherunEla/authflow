@@ -10,8 +10,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Button } from "@/components/ui/button";
-import axios from "axios";
+
+import { DropDownMenu } from "./dropdownauthentication";
 
 const shortenId = (id: string) => {
   return `${id.slice(0, 6)}...${id.slice(-4)}`;
@@ -73,41 +73,6 @@ export const columns = [
   columnHelper.display({
     id: "acions",
     header: "Actions",
-    cell: ({ row }) => {
-      const user = row.original;
-      const id = user.id;
-      const handleAction = async () => {
-        try {
-          const res = await axios.post("/api/enable-2fa/reset", {
-            data: {
-              id,
-              actionTargetType: "AUTHENTICATION",
-              notes: "2FA reset by admin due to user access loss.",
-            },
-          });
-          console.log(res);
-        } catch (error) {
-          console.error("Failed to resend setup email", error);
-        }
-      };
-
-      if (user.twoFaEnabled) {
-        return (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="ghost" size="sm" onClick={() => handleAction()}>
-                Resend
-              </Button>
-            </TooltipTrigger>
-
-            <TooltipContent>
-              <p>Allow user to reconfigure their authenticator app</p>
-            </TooltipContent>
-          </Tooltip>
-        );
-      } else {
-        return <p></p>;
-      }
-    },
+    cell: ({ row }) => <DropDownMenu user={row.original} />,
   }),
 ];
