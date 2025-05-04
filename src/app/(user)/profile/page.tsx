@@ -9,6 +9,9 @@ export default async function Profilepage() {
   if (!session) {
     redirect("/login");
   }
+  if (session.source === "next-auth") {
+    redirect("/");
+  }
 
   const user = await getprofiledata();
   let userdata;

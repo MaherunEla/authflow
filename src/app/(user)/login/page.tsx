@@ -116,7 +116,7 @@ export default function Login({
 
               <button
                 type="submit"
-                className="block rounded-lg bg-indigo-500 px-8 py-3 text-center text-sm font-semibold text-white outline-none ring-gray-300 transition duration-100 hover:bg-gray-700 focus-visible:ring active:bg-gray-600 md:text-base"
+                className="block rounded-lg bg-indigo-500 px-8 py-3 text-center text-sm font-semibold text-white outline-none ring-gray-300 transition duration-100 hover:bg-gray-700 focus-visible:ring active:bg-gray-600 md:text-base cursor-pointer"
               >
                 {step === "2fa" ? "Verify Code" : "Log in"}
               </button>
@@ -129,7 +129,7 @@ export default function Login({
               Don&apos;t have an account?{" "}
               <a
                 href="/signup"
-                className="text-indigo-500 transition duration-100 hover:text-indigo-600 active:text-indigo-700"
+                className="text-indigo-500 transition duration-100 hover:text-indigo-600 active:text-indigo-700 cursor-pointer"
               >
                 Signup
               </a>

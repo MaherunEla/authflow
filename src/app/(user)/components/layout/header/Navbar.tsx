@@ -3,11 +3,12 @@ import { logout } from "@/lib/lib";
 
 import Link from "next/link";
 import React from "react";
+import { MobileMenu } from "./MobileMenu";
 
 export default async function Navbar() {
   const session = await getServerSessionUnified();
   // console.log(session?.source);
-  console.log(session?.user);
+  console.log(session);
   //const session = await getSession();
 
   return (
@@ -30,18 +31,18 @@ export default async function Navbar() {
         AuthFlow
       </Link>
 
-      <div className="-ml-8 flex-col gap-2.5 sm:flex-row sm:justify-center lg:flex lg:justify-start">
+      <div className="-ml-8 hidden flex-col gap-2.5 sm:flex-row sm:justify-center lg:flex lg:justify-start">
         {session?.user ? (
           <Link
             href="/profile"
-            className="inline-block rounded-lg px-4 py-3 text-center text-sm font-semibold text-gray-500 outline-none ring-indigo-300 transition duration-100 hover:text-indigo-500 focus-visible:ring active:text-indigo-600 md:text-base"
+            className="inline-block rounded-lg px-4 py-3 text-center text-sm font-semibold text-gray-500 outline-none ring-indigo-300 transition duration-100 hover:text-indigo-500 focus-visible:ring active:text-indigo-600 md:text-base cursor-pointer"
           >
             {session?.user?.name || session?.user?.email}
           </Link>
         ) : (
           <a
             href="/login"
-            className="inline-block rounded-lg px-4 py-3 text-center text-sm font-semibold text-gray-500 outline-none ring-indigo-300 transition duration-100 hover:text-indigo-500 focus-visible:ring active:text-indigo-600 md:text-base"
+            className="inline-block rounded-lg px-4 py-3 text-center text-sm font-semibold text-gray-500 outline-none ring-indigo-300 transition duration-100 hover:text-indigo-500 focus-visible:ring active:text-indigo-600 md:text-base cursor-pointer"
           >
             Log in
           </a>
@@ -56,7 +57,7 @@ export default async function Navbar() {
           >
             <button
               type="submit"
-              className="inline-block rounded-lg bg-indigo-500 px-8 py-3 text-center text-sm font-semibold text-white outline-none ring-indigo-300 transition duration-100 hover:bg-indigo-600 focus-visible:ring active:bg-indigo-700 md:text-base"
+              className="inline-block rounded-lg bg-indigo-500 px-8 py-3 text-center text-sm font-semibold text-white outline-none ring-indigo-300 transition duration-100 hover:bg-indigo-600 focus-visible:ring active:bg-indigo-700 md:text-base cursor-pointer"
             >
               Log out
             </button>
@@ -64,12 +65,14 @@ export default async function Navbar() {
         ) : (
           <a
             href="/signup"
-            className="inline-block rounded-lg bg-indigo-500 px-8 py-3 text-center text-sm font-semibold text-white outline-none ring-indigo-300 transition duration-100 hover:bg-indigo-600 focus-visible:ring active:bg-indigo-700 md:text-base"
+            className="inline-block rounded-lg bg-indigo-500 px-8 py-3 text-center text-sm font-semibold text-white outline-none ring-indigo-300 transition duration-100 hover:bg-indigo-600 focus-visible:ring active:bg-indigo-700 md:text-base cursor-pointer"
           >
             Sign up
           </a>
         )}
       </div>
+      <MobileMenu user={session?.user} />
+
       {/* <pre>{JSON.stringify(session, null, 2)}</pre> */}
     </header>
   );

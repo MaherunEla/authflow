@@ -30,13 +30,19 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <div className="bg-white lg:pb-12">
-          <div className="mx-auto max-w-screen-2xl px-4 md:px-8">
-            <Navbar />
-            {children}
-            <Footer />
-            <Toaster />
+        <div className="min-h-screen flex flex-col bg-white">
+          <div className="flex-1">
+            <div className="mx-auto max-w-screen-2xl px-4 md:px-8">
+              <Navbar />
+              {children}
+            </div>
           </div>
+
+          <div className="mx-auto max-w-screen-2xl px-4 md:px-8">
+            <Footer />
+          </div>
+
+          <Toaster />
         </div>
       </body>
     </html>

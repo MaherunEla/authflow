@@ -48,13 +48,13 @@ export default function TwoFactorSetup() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center py-8">
+    <div className="flex flex-col items-center justify-center py-8 ">
       <h2 className="text-xl font-bold mb-4 ">Two-Factor Authentication</h2>
 
       {!qrCode && (
         <button
           onClick={generateQRCode}
-          className="bg-blue-500 text-white px-4 py-2 rounded"
+          className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer"
         >
           Enable 2FA
         </button>
@@ -83,7 +83,7 @@ export default function TwoFactorSetup() {
             />
             <button
               onClick={verifyCode}
-              className="inline-block rounded-lg bg-indigo-500 px-8 py-3 text-center text-sm font-semibold text-white outline-none ring-indigo-300 transition duration-100 hover:bg-indigo-600 focus-visible:ring active:bg-indigo-700 md:text-base"
+              className="inline-block rounded-lg bg-indigo-500 px-8 py-3 text-center text-sm font-semibold text-white outline-none ring-indigo-300 transition duration-100 hover:bg-indigo-600 focus-visible:ring active:bg-indigo-700 md:text-base cursor-pointer"
             >
               Confirm
             </button>
