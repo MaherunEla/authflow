@@ -42,14 +42,14 @@ export const POST = async (req: Request) => {
         ip,
       });
       return NextResponse.json(
-        { erro: "Invaild email or password" },
+        { error: "Invaild email or password" },
         { status: 400 }
       );
     }
 
     if (user.status === "SUSPENDED" || user.status === "LOCKED") {
       return NextResponse.json(
-        { erro: "Your account is currently not allowed to log in." },
+        { error: "Your account is currently not allowed to log in" },
         { status: 400 }
       );
     }

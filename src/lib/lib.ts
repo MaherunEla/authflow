@@ -82,11 +82,11 @@ export async function login(formData: FormData, meta: RequestMeta) {
       }
     );
     console.log({ res });
+    const data = await res.json();
     if (!res.ok) {
-      return { error: "Invalid email or password" };
+      return { error: data.error || "Invalid email or password" };
     }
 
-    const data = await res.json();
     if (!data.user) {
       return { error: "User not found" };
     }
