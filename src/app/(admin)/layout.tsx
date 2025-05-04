@@ -5,6 +5,7 @@ import { getServerSessionUnified } from "@/lib/getServerSessionUnified";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "./components/app-sidebar";
 import { Toaster } from "@/components/ui/sonner";
+import { redirect } from "next/navigation";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,6 +31,10 @@ export default async function RootLayout({
 
   const username = admin?.user.name || "shadcn";
   const useremail = admin?.user.email || "shadcn@gmail.com";
+
+  if (!admin || admin.user.role !== "ADMIN") {
+    redirect("/");
+  }
   return (
     <html lang="en">
       <body

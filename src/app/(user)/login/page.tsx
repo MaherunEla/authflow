@@ -5,6 +5,7 @@ import { cookies, headers } from "next/headers";
 import Sociallogin from "../components/shared/sociallogin";
 import { use } from "react";
 import FingerprintField from "../components/shared/FingerprintField";
+import { getServerSessionUnified } from "@/lib/getServerSessionUnified";
 
 export default function Login({
   searchParams,
@@ -48,7 +49,12 @@ export default function Login({
                 cookieStore.set("custom_jwt", result.custom_jwt, {
                   httpOnly: true,
                 });
-                redirect("/");
+                const session = await getServerSessionUnified();
+                if (session?.user?.role === "ADMIN") {
+                  redirect("/dashboard");
+                } else {
+                  redirect("/");
+                }
               }
             }}
           >
