@@ -14,6 +14,7 @@ export async function getUserFromDB() {
       name: true,
       email: true,
       role: true,
+      provider: true,
       status: true,
       twoFaEnabled: true,
       lastLoginAt: true,

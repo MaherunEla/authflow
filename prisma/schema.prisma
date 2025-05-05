@@ -13,8 +13,9 @@ model User {
   id                 String               @id @default(uuid())
   name               String
   email              String               @unique
-  password           String
+  password           String?
   role               Role                 @default(USER)
+  provider           String?
   twoFaEnabled       Boolean              @default(false)
   twoFaSecret        String?
   createdAt          DateTime             @default(now())

@@ -4,14 +4,10 @@ import { prisma } from "./prisma";
 export async function getprofiledata() {
   const session = await getServerSessionUnified();
 
-  if (!session) {
-    throw new Error("Unauthorized");
-  }
-
-  if (!session?.user?.email) {
-    console.warn("Email not available in session, using fallback value.");
-
-    session.user.email = "Email not available";
+  if (!session || !session?.user?.email) {
+    throw new Error(
+      "Unauthorized: Email not available in session, using fallback value."
+    );
   }
 
   const user = await prisma.user.findUnique({
@@ -20,6 +16,7 @@ export async function getprofiledata() {
       id: true,
       name: true,
       email: true,
+      role: true,
       twoFaEnabled: true,
       updatedAt: true,
     },

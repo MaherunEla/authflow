@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import {
   Select,
   SelectContent,
@@ -14,40 +14,62 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
-import Link from "next/link";
 import { toast } from "sonner";
+import { Role } from "@prisma/client";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 type Props = {
   user: {
     id: string;
     name: string;
     email: string;
+    role: Role;
     twoFaEnabled: boolean;
     updatedAt: string;
   };
 };
 
-const profileformSchema = z.object({
-  name: z.string().min(3, { message: "name is require" }).optional(),
-  email: z.string().email({ message: "Invalid Email address" }).optional(),
-  password: z
-    .string()
-    .optional()
-    .refine((val) => !val || val.length >= 8, {
-      message: "Password must be at least 8 characters",
-    }),
-  newpassword: z
-    .string()
-    .optional()
-    .refine((val) => !val || val.length >= 8, {
-      message: "Password must be at least 8 characters",
-    }),
-  twoFaEnabled: z.boolean(),
-});
+const profileformSchema = z
+  .object({
+    name: z.string().min(3, { message: "name is require" }).optional(),
+    email: z.string().email({ message: "Invalid Email address" }).optional(),
+    password: z
+      .string()
+      .optional()
+      .refine((val) => !val || val.length >= 8, {
+        message: "Password must be at least 8 characters",
+      }),
+
+    newpassword: z
+      .string()
+      .optional()
+      .refine((val) => !val || val.length >= 8, {
+        message: "New Password must be at least 8 characters",
+      }),
+    confirmnewpassword: z
+      .string()
+      .optional()
+      .refine((val) => !val || val.length >= 8, {
+        message: "Confirm Password must be at least 8 characters",
+      }),
+    twoFaEnabled: z.boolean(),
+  })
+  .refine((data) => data.newpassword === data.confirmnewpassword, {
+    path: ["confirmnewpassword"],
+    message: "New Passwords do not match",
+  });
 
 type FormValues = z.infer<typeof profileformSchema>;
 
 const Profileedit = ({ user }: Props) => {
+  const [showDialog, setShowDialog] = useState(false);
+
   const router = useRouter();
   const form = useForm<FormValues>({
     defaultValues: async () => {
@@ -56,6 +78,7 @@ const Profileedit = ({ user }: Props) => {
           name: user.name,
           email: user.email,
           password: "",
+          role: user.role,
           twoFaEnabled: user.twoFaEnabled ?? false,
         };
       }
@@ -63,6 +86,7 @@ const Profileedit = ({ user }: Props) => {
         name: "",
         email: "",
         password: "",
+        role: Role.GUEST,
         twoFaEnabled: false,
       };
     },
@@ -73,6 +97,7 @@ const Profileedit = ({ user }: Props) => {
     handleSubmit,
     register,
     control,
+    reset,
     formState: { errors },
   } = form;
 
@@ -83,12 +108,25 @@ const Profileedit = ({ user }: Props) => {
       console.log({ res });
       toast("Profile has been updated.");
       router.refresh();
+      reset({
+        password: "",
+        newpassword: "",
+        confirmnewpassword: "",
+      });
     } catch (errors) {
       if (axios.isAxiosError(errors)) {
         console.error("Profile error", errors);
       } else {
         console.error("Unexpected error", errors);
       }
+    }
+  };
+
+  const handleClick = () => {
+    if (user.role === "GUEST") {
+      setShowDialog(true);
+    } else {
+      router.push(`/twofa/${user.id}`);
     }
   };
   return (
@@ -136,21 +174,24 @@ const Profileedit = ({ user }: Props) => {
           {errors.email && (
             <p className="text-red-600">{errors.email.message as string}</p>
           )}
-
-          <div className="sm:col-span-2">
-            <label
-              htmlFor="password"
-              className="mb-2 inline-block text-sm text-gray-800 sm:text-base"
-            >
-              Current Password
-            </label>
-            <input
-              {...register("password")}
-              className="w-full rounded border bg-gray-50 px-3 py-2 text-gray-800 outline-none ring-indigo-300 transition duration-100 focus:ring"
-            />
-          </div>
-          {errors.password && (
-            <p className="text-red-600">{errors.password.message as string}</p>
+          {user.role !== "GUEST" && (
+            <div className="sm:col-span-2">
+              <label
+                htmlFor="password"
+                className="mb-2 inline-block text-sm text-gray-800 sm:text-base"
+              >
+                Current Password
+              </label>
+              <input
+                {...register("password")}
+                className="w-full rounded border bg-gray-50 px-3 py-2 text-gray-800 outline-none ring-indigo-300 transition duration-100 focus:ring"
+              />
+              {errors.password && (
+                <p className="text-red-600">
+                  {errors.password.message as string}
+                </p>
+              )}
+            </div>
           )}
 
           <div className="sm:col-span-2">
@@ -168,6 +209,23 @@ const Profileedit = ({ user }: Props) => {
           {errors.newpassword && (
             <p className="text-red-600">
               {errors.newpassword.message as string}
+            </p>
+          )}
+          <div className="sm:col-span-2">
+            <label
+              htmlFor="password"
+              className="mb-2 inline-block text-sm text-gray-800 sm:text-base"
+            >
+              Confirm NewPassword
+            </label>
+            <input
+              {...register("confirmnewpassword")}
+              className="w-full rounded border bg-gray-50 px-3 py-2 text-gray-800 outline-none ring-indigo-300 transition duration-100 focus:ring"
+            />
+          </div>
+          {errors.confirmnewpassword && (
+            <p className="text-red-600">
+              {errors.confirmnewpassword.message as string}
             </p>
           )}
           {user.twoFaEnabled ? (
@@ -233,17 +291,26 @@ const Profileedit = ({ user }: Props) => {
             </span>
           </p>
 
-          {user.twoFaEnabled ? (
-            <></>
-          ) : (
-            <Link
-              href={`/twofa/${user.id}`}
-              className="text-base font-bold text-blue-600 lg:text-xl cursor-pointer"
+          {!user.twoFaEnabled && (
+            <Button
+              variant="link"
+              className="text-base font-bold text-blue-600 lg:text-xl cursor-pointer "
+              onClick={handleClick}
             >
-              {" "}
               → Manage Two-Factor Authentication
-            </Link>
+            </Button>
           )}
+          <Dialog open={showDialog} onOpenChange={setShowDialog}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Set a password first</DialogTitle>
+                <p className="text-sm text-gay-600">
+                  To enable Two-Factor Authentication, please update you profile
+                  with a password first.
+                </p>
+              </DialogHeader>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
     </div>

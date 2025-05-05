@@ -11,6 +11,7 @@ export type TableUser = {
   name: string;
   email: string;
   role: Role;
+  provider: string;
   status: string;
   twoFaEnabled: boolean;
   lastLoginAt: string;
@@ -23,6 +24,7 @@ export default async function Home() {
     name: e.name,
     email: e.email,
     role: e.role,
+    provider: e.provider || "custom_jwt",
     status: e.status,
     twoFaEnabled: e.twoFaEnabled,
     lastLoginAt: e.lastLoginAt ? e.lastLoginAt.toISOString() : "",

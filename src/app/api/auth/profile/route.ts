@@ -2,11 +2,13 @@ import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getServerSessionUnified } from "@/lib/getServerSessionUnified";
+import { Role } from "@prisma/client";
 
 type User = {
   name: string;
   password?: string;
   email: string;
+  role?: Role;
   twoFaEnabled: boolean;
   twoFaSecret?: string | null;
 };
@@ -26,7 +28,14 @@ export const PUT = async (req: Request) => {
       twoFaEnabled: data.twoFaEnabled,
     };
 
-    if (data.password && data.newpassword) {
+    if (data.newpassword && session.user.role === "GUEST") {
+      const hashedPassword = await bcrypt.hash(data.newpassword, 10);
+
+      updateData.password = hashedPassword;
+      updateData.role = "USER";
+    }
+
+    if (data.password && data.newpassword && data.role !== "GUEST") {
       const user = await prisma.user.findUnique({
         where: {
           id: session?.user?.id as string,

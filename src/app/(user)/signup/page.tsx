@@ -6,16 +6,21 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-const signupformSchema = z.object({
-  name: z.string().min(3, "Name is required"),
-  email: z
-    .string()
-    .min(5, "Email is required")
-    .email({ message: "Invalid Email address" }),
-  password: z.string().min(8, "Password is required"),
-  newpassword: z.string().min(8, "password is required").optional(),
-  twoFaEnabled: z.enum(["enable", "disable"]).optional(),
-});
+const signupformSchema = z
+  .object({
+    name: z.string().min(3, "Name is required"),
+    email: z
+      .string()
+      .min(5, "Email is required")
+      .email({ message: "Invalid Email address" }),
+    password: z.string().min(8, "Password is required"),
+    confirmpassword: z.string().min(8, "Confirm Password is required"),
+    twoFaEnabled: z.enum(["enable", "disable"]).optional(),
+  })
+  .refine((data) => data.password === data.confirmpassword, {
+    path: ["confirmpassword"],
+    message: "Passwords do not match",
+  });
 
 type FormValues = z.infer<typeof signupformSchema>;
 
@@ -103,6 +108,25 @@ const Signup = () => {
         </div>
         {errors.password && (
           <p className="text-red-600">{errors.password.message as string}</p>
+        )}
+
+        <div className="sm:col-span-2">
+          <label
+            htmlFor="confirmpassword"
+            className="mb-2 inline-block text-sm text-gray-800 sm:text-base"
+          >
+            Confirm Password
+          </label>
+          <input
+            type="password"
+            {...register("confirmpassword")}
+            className="w-full rounded border bg-gray-50 px-3 py-2 text-gray-800 outline-none ring-indigo-300 transition duration-100 focus:ring"
+          />
+        </div>
+        {errors.confirmpassword && (
+          <p className="text-red-600">
+            {errors.confirmpassword.message as string}
+          </p>
         )}
 
         <div className="flex items-center justify-between sm:col-span-2">

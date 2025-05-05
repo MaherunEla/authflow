@@ -54,7 +54,9 @@ export const POST = async (req: Request) => {
       );
     }
 
-    const isValidPassword = await bcrypt.compare(password, user.password);
+    const isValidPassword = user.password
+      ? await bcrypt.compare(password, user.password)
+      : false;
     if (!isValidPassword) {
       await LogLoginAttempt({
         email: email || "unknown",

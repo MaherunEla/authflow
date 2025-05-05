@@ -78,6 +78,7 @@ const NewUserTable = ({ data }: { data: newuser[] }) => {
           <SelectContent>
             <SelectItem value="all">All</SelectItem>
             <SelectItem value="user">User</SelectItem>
+            <SelectItem value="admin">Admin</SelectItem>
             <SelectItem value="Guest">Guest</SelectItem>
           </SelectContent>
         </Select>

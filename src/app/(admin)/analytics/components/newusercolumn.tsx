@@ -73,7 +73,7 @@ export const columns = [
           break;
         case "LOCKED":
           colorClass = "bg-red-100 text-red-800 ";
-          label = "Suspended";
+          label = "Locked";
           break;
       }
 

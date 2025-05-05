@@ -46,10 +46,28 @@ export const columns = [
     header: () => "Email",
   }),
   columnHelper.accessor("role", {
-    cell: (info) => (
-      <p className="font-semibold text-gray-800">{info.getValue()}</p>
-    ),
     header: () => "Role",
+    cell: ({ row }) => {
+      const role = row.original.role;
+      const provider = row.original.provider;
+
+      return (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <p className="font-semibold text-gray-800 ">{role}</p>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>
+                Provider: {provider === "google" && "Google"}
+                {provider === "github" && "Github"}{" "}
+                {provider === "custom_jwt" && "Email and Password"}
+              </p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      );
+    },
   }),
   columnHelper.accessor("status", {
     cell: ({ row }) => {
@@ -72,7 +90,7 @@ export const columns = [
           break;
         case "LOCKED":
           colorClass = "bg-red-100 text-red-800 ";
-          label = "Suspended";
+          label = "Locked";
           break;
       }
 
