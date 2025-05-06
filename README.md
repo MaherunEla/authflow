@@ -115,7 +115,7 @@ npm run dev
 
 ## 📷 Screenshots
 
-![Admin Dashboard](https://raw.githubusercontent.com/MaherunEla/authflow/main/public/DashboardAdmin.png)
+![Admin Dashboard](https://github.com/MaherunEla/authflow/blob/main/public/DashboardAdmin.png?raw=true)
 ![User Management Table](usertableaction.png)
 ![User Management Table send email with suspend reason](suspenduser.png)
 ![User Management Table suspend email](sentsuspendreason.jpg)
