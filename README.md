@@ -2,6 +2,13 @@
 
 [Live Project](https://authflow-one.vercel.app/)
 
+## 🧪 Test Admin Account
+
+Use the following credentials to explore the admin dashboard and authentication features:
+
+**Email:** admin@gmail.com  
+**Password:** Admin@123
+
 A modern authentication system built with **Next.js 15 App Router**, **Prisma**, **PostgreSQL**, and custom **JWT-based authentication**. It features:
 
 - Email/password login
