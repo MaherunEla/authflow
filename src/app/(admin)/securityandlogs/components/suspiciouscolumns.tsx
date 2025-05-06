@@ -53,7 +53,7 @@ export const columns = [
       if (type === "NEW_DEVICE") {
         typeClass = "text-green-600 font-semibold  ";
         icon = "📱";
-      } else if (type === "MULTIPLE_SESSION") {
+      } else if (type === "MULTI_SESSION") {
         typeClass = "text-indigo-600";
         icon = "👥";
       } else if (type === "IP_OR_LOCATION_CHANGE") {

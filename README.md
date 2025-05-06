@@ -1,6 +1,8 @@
 # AuthFlow 🔐
 
-A modern authentication system built with **Next.js 14 App Router**, **Prisma**, **PostgreSQL**, and custom **JWT-based authentication**. It features:
+[Live Project](https://authflow-one.vercel.app/)
+
+A modern authentication system built with **Next.js 15 App Router**, **Prisma**, **PostgreSQL**, and custom **JWT-based authentication**. It features:
 
 - Email/password login
 - Google OAuth login via NextAuth
@@ -19,7 +21,7 @@ A modern authentication system built with **Next.js 14 App Router**, **Prisma**,
 
 ## 🛠️ Tech Stack
 
-- Next.js 14 (App Router)
+- Next.js 15 (App Router)
 - TypeScript
 - Prisma ORM
 - PostgreSQL
@@ -32,13 +34,20 @@ A modern authentication system built with **Next.js 14 App Router**, **Prisma**,
 ## 📦 Installation
 
 ```bash
-git clone
+git clone https://github.com/MaherunEla/authflow.git
 cd authflow
 npm install
 ```
 
-🧪 Environment Variables
+```
+
+```
+
+### 🧪 Environment Variables
+
 Create a .env.local file and add:
+
+```env
 GOOGLE_CLIENT_ID=your_google_client_id
 GOOGLE_CLIENT_SECRET=your_google_client_secret
 
@@ -54,44 +63,87 @@ JWT_SECRET=your_custom_jwt_secret
 TEMP_SECRET=your_temp_secret
 RESEND_API_KEY=your_resend_api_key
 
-🧱 Prisma Setup
+```
 
+### 🧱 Prisma Setup
+
+```bash
 npx prisma db push
 npx prisma generate
 
-▶️ Running Locally
+```
+
+### ▶️ Running Locally
+
 npm run dev
 
-🔐 2FA Guide
-Visit /twofa to enable 2FA.
+```
 
-Scan the QR code using Google Authenticator.
+### 🔐 2FA Guide
 
-Enter the generated 6-digit code to verify.
+-Visit /twofa to enable 2FA.
 
-🧪 Testing
-You can test APIs using tools like:
+-Scan the QR code using Google Authenticator.
 
-Postman
+-Enter the generated 6-digit code to verify.
 
-Thunder Client
 
-fetch/axios in your browser dev tools or internal routes
+### 🧪 Testing
 
-🌍 Deployment
-✅ Vercel
-This project is ready for Vercel.
+ You can test APIs using tools like:
 
-Push to GitHub
+-Postman
 
-Go to vercel.com
+-Thunder Client
 
-Import your repo → Set environment variables
+-fetch/axios in your browser dev tools or internal routes
 
-Click Deploy
 
-📷 Screenshots
+### 🌍 Deployment (Vercel)
 
-🙋‍♂️ Author
+✅ This project is ready for Vercel.
 
-📄 License
+1.Push to GitHub
+
+2.Go to vercel.com
+
+3.Import your repo → Set environment variables
+
+4.Click Deploy
+
+
+
+## 📷 Screenshots
+
+![Admin Dashboard](DashboardAdmin.png)
+![User Management Table](usertableaction.png)
+![User Management Table send email with suspend reason](suspenduser.png)
+![User Management Table suspend email](sentsuspendreason.jpg)
+![Session & logs user active table](useractivetable.png)
+![Session & logs failed login attempt table](failedloginattempt.png)
+![Session & logs Suspicioustable](suspicioustable.png)
+![Session & logs Audit table](audittable.png)
+![Authentication 2fa status table](2fastatustable.png)
+![Analytic](analytic.png)
+![Analytic new user table](newuser.png)
+![Navbar](navbar.png)
+![Mobile navbar](navbarmobile.png)
+![Signup page](signuppage.jpg)
+![Login page](login.jpg)
+![Login with 2fa](loginwith2fa.jpg)
+![Home page](homepage.jpg)
+![Profile page](profilesetting.png)
+![Security setting ](secuitysetting.png)
+![Two fa qr scan page](twofaverified.png)
+
+## 🙋‍♂️ Author
+
+** Maherun Nessa Ela **
+📧 meherunela2002@gmail.com
+🌍[LinkedIn] (www.linkedin.com/in/maherun-nessa-ela)
+
+
+
+
+---
+```

@@ -40,7 +40,12 @@ export function DropDownMenu({ user }: Props) {
       {user.twoFaEnabled ? (
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button variant="ghost" size="sm" onClick={() => handleAction()}>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => handleAction()}
+              className="cursor-pointer"
+            >
               Resend
             </Button>
           </TooltipTrigger>

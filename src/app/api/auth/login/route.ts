@@ -91,17 +91,16 @@ export const POST = async (req: Request) => {
 
     const parser = new UAParser.UAParser();
     parser.setUA(userAgent);
-    const browser = parser.getBrowser().name || "Unknown Browser";
-    const os = parser.getOS().name || "Unknown OS";
+    const browser = parser.getBrowser().name ?? "Unknown Browser";
+    const os = parser.getOS().name ?? "Unknown OS";
     const deviceName = `${browser} on ${os}`;
     const location = await getLocationFromIP(ip);
 
-    const device = await prisma.device.findFirst({
-      where: {
-        userId: user.id,
-        fingerprint: fingerprint || "",
-      },
-    });
+    const device = fingerprint
+      ? await prisma.device.findFirst({
+          where: { userId: user.id, fingerprint },
+        })
+      : null;
     const hasAnyDevice = await prisma.device.findFirst({
       where: {
         userId: user.id,
