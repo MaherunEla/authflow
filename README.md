@@ -111,39 +111,39 @@ npm run dev
 
 4.Click Deploy
 
-
+```
 
 ## 📷 Screenshots
 
-![Admin Dashboard](https://github.com/MaherunEla/authflow/blob/main/public/DashboardAdmin.png?raw=true)
-![User Management Table](usertableaction.png)
-![User Management Table send email with suspend reason](suspenduser.png)
-![User Management Table suspend email](sentsuspendreason.jpg)
-![Session & logs user active table](useractivetable.png)
-![Session & logs failed login attempt table](failedloginattempt.png)
-![Session & logs Suspicioustable](suspicioustable.png)
-![Session & logs Audit table](audittable.png)
-![Authentication 2fa status table](2fastatustable.png)
-![Analytic](analytic.png)
-![Analytic new user table](newuser.png)
-![Navbar](navbar.png)
-![Mobile navbar](navbarmobile.png)
-![Signup page](signuppage.jpg)
-![Login page](login.jpg)
-![Login with 2fa](loginwith2fa.jpg)
-![Home page](homepage.jpg)
-![Profile page](profilesetting.png)
-![Security setting ](secuitysetting.png)
-![Two fa qr scan page](twofaverified.png)
+![Admin Dashboard](public/project/DashboardAdmin.png)
+![User Management Table](public/project/usertableaction.png)
+![User Management Table send email with suspend reason](public/project/suspenduser.png)
+![User Management Table suspend email](public/project/sentsuspendreason.jpg)
+![Session & logs user active table](public/project/useractivetable.png)
+![Session & logs failed login attempt table](public/project/failedloginattempt.png)
+![Session & logs Suspicioustable](public/project/suspicioustable.png)
+![Session & logs Audit table](public/project/audittable.png)
+![Authentication 2fa status table](public/project/2fastatustable.png)
+![Analytic](public/project/analytic.png)
+![Analytic new user table](public/project/newuser.png)
+![Navbar](public/project/navbar.png)
+![Mobile navbar](public/project/navbarmobile.png)
+![Signup page](public/project/signuppage.jpg)
+![Login page](public/project/login.jpg)
+![Login with 2fa](public/project/loginwith2fa.jpg)
+![Home page](public/project/homepage.jpg)
+![Profile page](public/project/profilesetting.png)
+![Security setting ](public/project/secuitysetting.png)
+![Two fa qr scan page](public/project/twofaverified.png)
 
 ## 🙋‍♂️ Author
 
 ** Maherun Nessa Ela **
 📧 meherunela2002@gmail.com
-🌍[LinkedIn] (www.linkedin.com/in/maherun-nessa-ela)
-
-
-
+🌍[LinkedIn](www.linkedin.com/in/maherun-nessa-ela)
 
 ---
+
+```
+
 ```
