@@ -145,7 +145,7 @@ npm run dev
 
 ## 🙋‍♂️ Author
 
-** Maherun Nessa Ela **
+**Maherun Nessa Ela**
 📧 meherunela2002@gmail.com
 🌍[LinkedIn](www.linkedin.com/in/maherun-nessa-ela)
 
