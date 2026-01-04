@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { signupUser } from "@/lib/signup";
+import { AppError } from "@/lib/errors/AppError";
 
 export const POST = async (req: Request) => {
   try {
@@ -13,21 +14,14 @@ export const POST = async (req: Request) => {
       { status: 201 }
     );
   } catch (error: any) {
-    if (error.message === "VALIDATION_ERROR") {
+    if (error instanceof AppError) {
       return NextResponse.json(
-        {
-          error: "All fields are required",
-        },
-        { status: 400 }
+        { error: error.message, code: error.code },
+        { status: error.statusCode }
       );
     }
-    if (error.message === "EMAIL_EXISTS") {
-      return NextResponse.json(
-        { error: "Email already exists" },
-        { status: 409 }
-      );
-    }
-    console.error("Signup Error:", error);
+
+    console.error("Unexpected Signup Error:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

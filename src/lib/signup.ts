@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
 import { prisma } from "./prisma";
+import { EmailAlreadyExistsError, ValidationError } from "./errors/AuthErrors";
 
 export async function signupUser({
   name,
@@ -10,10 +11,11 @@ export async function signupUser({
   email: string;
   password: string;
 }) {
-  if (!name || !email || !password) throw new Error("VALIDATION_ERROR");
+  if (!name || !email || !password)
+    throw new ValidationError("Name, email and password are required");
 
   const existingUser = await prisma.user.findUnique({ where: { email } });
-  if (existingUser) throw new Error("EMAIL_EXISTS");
+  if (existingUser) throw new EmailAlreadyExistsError();
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
